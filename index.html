@@ -115,8 +115,8 @@ import { initializeFirestore, persistentLocalCache, collection, doc, setDoc, add
 import { getMessaging, getToken, onMessage, isSupported } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js';
 
 
-let CFG = {};
-try { CFG = JSON.parse(localStorage.getItem('garden_cfg') || '{}'); } catch { CFG = {}; }
+let CFG = { firebase: { apiKey: 'AIzaSyBp_iSix-3C2PPSSwqOF63q9FLX1X5OnHU', authDomain: 'my-garden-31e4a.firebaseapp.com', projectId: 'my-garden-31e4a', storageBucket: 'my-garden-31e4a.firebasestorage.app', messagingSenderId: '311246612916', appId: '1:311246612916:web:675d7e73d20ae01edceae1' }, vapidKey: 'BMVNvzJ9k9ivt5o7ttaQ4yllbIy60OrYZ18gxdMqgmX8r8mHV-wxLgszRsmIj9ai9MdbLKAkSBzObdVDj8rGduo' };
+try { const s = localStorage.getItem('garden_cfg'); if (s) CFG = JSON.parse(s); } catch {}
 const $app = document.getElementById('app');
 const $title = document.getElementById('title');
 const $sub = document.getElementById('subtitle');
