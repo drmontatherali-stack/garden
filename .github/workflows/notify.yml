@@ -1,0 +1,70 @@
+name: garden-notify
+
+on:
+  schedule:
+    - cron: '30 2 * * *'
+    - cron: '30 14 * * *'
+    - cron: '0 6 1 * *'
+  push:
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: 'morning or evening'
+        default: 'morning'
+
+permissions:
+  contents: write
+
+jobs:
+  notify:
+    if: github.event_name != 'push' && github.event.schedule != '0 6 1 * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: setup
+        run: |
+          echo '{"type":"module"}' > package.json
+          npm install firebase-admin@12 --no-audit --no-fund --no-save
+      - name: send
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          APP_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: |
+          SLOT="${{ github.event.inputs.slot }}"
+          if [ -z "$SLOT" ]; then
+            if [ "${{ github.event.schedule }}" = "30 2 * * *" ]; then SLOT=morning; else SLOT=evening; fi
+          fi
+          node send.js "$SLOT"
+
+  keepalive:
+    if: github.event.schedule == '0 6 1 * *'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          date -u +%Y-%m-%d > heartbeat.txt
+          git config user.name "garden-bot"
+          git config user.email "garden-bot@users.noreply.github.com"
+          git add heartbeat.txt
+          git commit -m "heartbeat" || exit 0
+          git push
+
+  unpack:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          shopt -s nullglob
+          zips=(*.zip)
+          [ ${#zips[@]} -eq 0 ] && exit 0
+          for z in "${zips[@]}"; do unzip -o "$z" -d . && git rm -q "$z"; done
+          git config user.name "garden-bot"
+          git config user.email "garden-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "unpack" || exit 0
+          git push
