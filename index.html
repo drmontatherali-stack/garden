@@ -511,7 +511,10 @@ function renderPlantForm(view, opts) {
 function renderAdd() {
   setHead('➕ إضافة نبات', 'صوّر النبات أو اختاره');
   const s = S.settings;
-  $app.innerHTML = `<div class="card"><h3>📷 تصوير والتعرف على النبات</h3>
+  $app.innerHTML = `<div class="card" style="border-color:var(--feed)"><h3>🛒 قبل ما تشتري</h3>
+      <p class="muted">بالمشتل: صوّر النبتة وخليني أفحصها وأكلك تشتريها لو لا.</p>
+      <button class="btn" id="prebuy" style="width:100%;background:var(--feed)">فحص نبتة بالمشتل</button></div>
+    <div class="card"><h3>📷 اشتريتها — تصوير وإضافة</h3>
       <p class="muted">صوّر 1-4 صور: النبتة كاملة + ورقة قريبة + الزهرة أو الثمرة إن وجدت. الصورة الواضحة بضوء النهار تعطي دقة أعلى.</p>
       ${!s.plantnetKey && !s.geminiKey ? `<div class="note red">ضع مفتاح PlantNet أو Gemini بالإعدادات حتى يشتغل التعرف.</div>` : ''}
       <div class="row"><label class="btn sec" style="text-align:center;margin:0">📸 الكاميرا<input id="cam" type="file" accept="image/*" capture="environment" class="hidden"></label>
@@ -532,6 +535,7 @@ function renderAdd() {
   document.getElementById('gal').onchange = (e) => addFiles(e.target.files);
   document.getElementById('ident').onclick = () => identify(photos);
   document.getElementById('lib').onclick = () => go('library');
+  document.getElementById('prebuy').onclick = () => openPrebuy();
   const bn = document.getElementById('byname');
   bn.oninput = () => {
     const q = bn.value.trim(); const res = document.getElementById('nameres');
@@ -598,6 +602,53 @@ function showAiResult(r, photos, el) {
   const ident = `التعرف: ${id.ar || p.ar} (${id.sci || p.sci}) — نسبة التأكد ${id.confidence ?? '?'}%`;
   document.getElementById('useai').onclick = () => dbMatch ? openPlantForm({ speciesId: dbMatch.id, photos, ident }) : openPlantForm({ profile: p, photos, ident });
   document.getElementById('viewai').onclick = () => openProfile(dbMatch || p, photos);
+}
+
+// ─────────────── فحص قبل الشراء ───────────────
+const SPOTS = ['داخل البيت — ضوء ضعيف (ممر/زاوية بعيدة عن الشبابيك)', 'داخل البيت — قرب شباك بضوء ساطع بدون شمس مباشرة', 'داخل البيت — شمس مباشرة من الشباك', 'الحديقة — شمس كاملة طول اليوم', 'الحديقة — شمس الصبح وظل العصر', 'الحديقة — ظل أغلب اليوم', 'ما مقرر بعد — اقترح لي المكان'];
+function openPrebuy() { const view = { form: true, render: () => renderPrebuy(view) }; push(view); }
+function renderPrebuy(view) {
+  setHead('🛒 فحص قبل الشراء', 'بالمشتل');
+  const photos = [];
+  $app.innerHTML = `<div class="card">
+    <p><b>صوّر 2-4 صور:</b> النبتة كاملة، ورقة قريبة من الوجه والظهر، وقاعدة الساق مع التربة. إذا تكدر، شيلها من الأصيص شوية وصوّر الجذور.</p>
+    <div class="row"><label class="btn sec" style="text-align:center;margin:0">📸 الكاميرا<input id="cam" type="file" accept="image/*" capture="environment" class="hidden"></label>
+    <label class="btn sec" style="text-align:center;margin:0">🖼 المعرض<input id="gal" type="file" accept="image/*" multiple class="hidden"></label></div>
+    <div class="photos" id="prev"></div>
+    <label>وين ناوي تحطها؟</label><select id="spot">${SPOTS.map((s) => `<option>${esc(s)}</option>`).join('')}</select>
+    <label>ملاحظة (اختياري)</label><input id="pnote" placeholder="مثلاً: البايع يكول اسمها كذا / سعرها">
+    ${S.settings.geminiKey ? '' : '<div class="note red">ضع مفتاح Gemini بالإعدادات أولاً.</div>'}
+    <button class="btn" id="go" style="width:100%;margin-top:12px;background:var(--feed)" disabled>🔍 افحصها</button><div id="out"></div></div>`;
+  const add = async (files) => { for (const f of [...files].slice(0, 4 - photos.length)) photos.push(await shrinkImage(f, 1280, 0.85)); document.getElementById('prev').innerHTML = photos.map((x) => `<img src="${x.dataUrl}">`).join(''); document.getElementById('go').disabled = !photos.length || !S.settings.geminiKey; };
+  document.getElementById('cam').onchange = (e) => add(e.target.files);
+  document.getElementById('gal').onchange = (e) => add(e.target.files);
+  document.getElementById('go').onclick = async () => {
+    const out = document.getElementById('out'); const spot = document.getElementById('spot').value; view.busy = true;
+    out.innerHTML = loading('المهندس الزراعي يفحص النبتة...');
+    try {
+      const r = await aiPrebuy({ key: S.settings.geminiKey, model: S.settings.model, images: photos, spot, note: document.getElementById('pnote').value.trim() });
+      const V = { buy: ['✅ اشتريها', 'status-ok'], conditional: ['⚠️ اشتريها بشرط', 'status-warn'], avoid: ['❌ لا تشتريها', 'status-bad'] }[r.verdict] || ['❔', ''];
+      const li = (arr) => (arr || []).length ? `<ul class="clean">${arr.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+      const match = PLANTS.find((p) => p.sci.toLowerCase().split(/[\/,]/).some((n) => n.trim() && (r.sci || '').toLowerCase().startsWith(n.trim()))) || matchScientific(r.sci || '');
+      out.innerHTML = `<div class="card" style="margin-top:12px"><h3 class="${V[1]}" style="font-size:22px">${V[0]}</h3><p>${esc(r.verdict_reason)}</p>
+        <p><b>${esc(r.ar)}</b> <span class="muted" dir="ltr"><i>${esc(r.sci)}</i></span> — تأكد ${esc(r.confidence)}%${match ? ' <span class="pill">موجودة بالمكتبة ✓</span>' : ''}</p>
+        <div class="row"><div><div class="muted">الصحة</div><div class="big">${esc(r.health_score)}/100</div></div><div><div class="muted">مناسبة للمكان</div><div class="big">${esc(r.fit_score)}/100</div></div><div><div class="muted">الصعوبة</div><div class="big" style="font-size:18px">${esc(r.difficulty)}</div></div></div>
+        ${r.health_issues?.length ? `<b>مشاكل شفتها:</b>${li(r.health_issues)}` : '<p class="status-ok">ما شفت مشاكل صحية واضحة بالصور.</p>'}
+        <p><b>المكان:</b> ${esc(r.fit_notes)}</p>${r.difficulty_reason ? `<p class="muted">${esc(r.difficulty_reason)}</p>` : ''}
+        <div class="note blue"><b>افحص بيدك قبل ما تدفع:</b>${li(r.check_in_store)}</div>
+        ${r.better_alternatives?.length && r.verdict !== 'buy' ? `<div class="note"><b>بدائل أنسب:</b>${li(r.better_alternatives)}</div>` : ''}
+        ${r.first_week?.length ? `<b>أول أسبوع بالبيت:</b>${li(r.first_week)}` : ''}
+        <button class="btn" id="bought" style="width:100%;margin-top:10px">🛍 اشتريتها — أضفها لحديقتي</button></div>`;
+      document.getElementById('bought').onclick = async () => {
+        const ident = `فحص قبل الشراء: ${r.ar} (${r.sci}) — ${V[0]}`;
+        if (match) return openPlantForm({ speciesId: match.id, photos, ident });
+        out.insertAdjacentHTML('beforeend', loading('أجهز ملف رعايتها...'));
+        try { const pr = await aiProfile({ key: S.settings.geminiKey, model: S.settings.model, images: photos, hint: `${r.sci} (${r.confidence}%)` }); openPlantForm({ profile: pr.profile, photos, ident }); }
+        catch (e) { toast(e.message); }
+      };
+    } catch (e) { out.innerHTML = `<div class="note red">${esc(e.message)}</div>`; }
+    finally { view.busy = false; }
+  };
 }
 
 // ─────────────── المكتبة ───────────────
@@ -901,6 +952,25 @@ async function aiHealth({ key, model, images, plant, profile, recent }) {
 افحص الصور بدقة (لون الأوراق، الاصفرار، الحروق، البقع، الذبول، الحشرات، حالة التربة إن ظهرت) وأعد JSON فقط:
 {"status": "healthy|warning|sick", "score": 0-100, "summary": "جملتان", "findings": ["ملاحظة محددة من الصورة"], "causes": ["السبب المرجح"], "actions": ["إجراء عملي محدد بالكمية والتوقيت"], "watering_change": "هل يحتاج تعديل السقي؟ نعم/لا ولماذا", "suggest_override": {"every": رقم_أو_null, "amount": رقم_أو_null}, "recheck_days": رقم}
 إذا الصورة غير واضحة للحكم قل ذلك بالـ summary واطلب صورة محددة (قريبة للورقة، أو للتربة، أو للنبتة كاملة).`;
+  return gemini({ key, model, prompt, images });
+}
+
+// فحص قبل الشراء: هوية + صحة + مناسبة للمكان + قرار
+async function aiPrebuy({ key, model, images, spot, note }) {
+  const prompt = `${CONTEXT}
+أنت مهندس زراعي يرافق صاحب البيت بالمشتل قبل ما يشتري نبتة. الصور ملتقطة بالمشتل الآن.
+المكان المخطط للنبتة بالبيت: ${spot}. ${note ? 'ملاحظة المشتري: ' + note : ''}
+افحص بدقة وبصرامة (الأفضل ينصحه لا يشتري من أن يشتري نبتة ستموت): هوية النبتة، صحتها من الصور (اصفرار، بقع، حواف محروقة، آفات مثل البق الدقيقي والعنكبوت الأحمر والتربس والذبابة البيضاء، ذبول، سيقان طرية أو سوداء عند القاعدة، تربة متعفنة أو مغطاة بطحالب، جذور طالعة من فتحات الأصيص)، ومدى مناسبتها للمكان المخطط ولمناخ النجف.
+أعد JSON فقط:
+{"ar":"الاسم الشائع بالعراق","sci":"الاسم العلمي","confidence":0-100,
+ "verdict":"buy|conditional|avoid","verdict_reason":"جملتان واضحتان",
+ "health_score":0-100,"health_issues":["مشكلة محددة شاهدتها بالصورة"],
+ "fit_score":0-100,"fit_notes":"هل المكان المخطط مناسب ولماذا، وما البديل الأفضل بالبيت",
+ "difficulty":"سهلة|متوسطة|صعبة","difficulty_reason":"",
+ "check_in_store":["فحص يدوي محدد يسويه قبل الدفع، مثل: اقلب ورقتين وشوف ظهرها"],
+ "first_week":["أول خطوات بعد الوصول للبيت"],
+ "better_alternatives":["بديل أنسب لنفس المكان إذا الحكم ليس buy"]}
+إذا الصور غير كافية للحكم قل ذلك بـ verdict_reason واطلب صورة محددة.`;
   return gemini({ key, model, prompt, images });
 }
 
