@@ -14,9 +14,8 @@ export function seasonOf(month) { // month 1..12
 }
 
 export const CATS = {
-  lawn: 'ثيل', tree: 'أشجار ظل', fruit: 'أشجار مثمرة', palm: 'نخيل', shrub: 'شجيرات وأسيجة',
-  flower: 'ورد وزهور', seasonal: 'زهور موسمية', climber: 'متسلقات', herb: 'أعشاب ونعناع',
-  succulent: 'صباريات', indoor: 'نباتات داخلية',
+  indoor: 'نباتات داخلية', succulent: 'صباريات وعصاريات', flower: 'ورد وزهور', seasonal: 'زهور موسمية',
+  shrub: 'شجيرات وأسيجة', climber: 'متسلقات', lawn: 'ثيل', tree: 'أشجار ظل', palm: 'نخيل زينة', herb: 'أعشاب ونعناع',
 };
 
 export const LIGHT = {
@@ -35,6 +34,9 @@ export const METHODS = {
   ring: 'بالصوندة على دائرة حول الجذع بمسافة 20-30 سم منه — لا تصب الماء على الجذع نفسه.',
   can: 'بالمرشة (سقاية يدوية) على التربة ببطء حتى يخرج الماء من فتحات الأصيص، ثم أفرغ الصحن بعد 15-20 دقيقة.',
   soak: 'سقية غمر للتربة عند القاعدة ثم اتركها تجف تماماً قبل السقية التالية.',
+  bottom: 'سقي من الأسفل: ضع الأصيص بصحن ماء 15-20 دقيقة حتى تتشرب التربة من فتحات التصريف، ثم ارفعه وصفّي الماء الزائد. لا تصب الماء على قلب النبتة.',
+  orchid: 'اغمر الأصيص (أصيص الأوركيد الشفاف) بوعاء ماء مفلتر أو مترّك لمدة 10-15 دقيقة، ثم ارفعه وصفّه جيداً. لا يبقى ماء بين الأوراق أو بقلب النبتة.',
+  vase: 'إذا مزروع بالماء: غيّر الماء كله بماء مفلتر أو مترّك 24 ساعة، واغسل الإناء والحصى، وخلّي الجذور مغطاة بالماء. إذا مزروع بتربة: اسقِ لما يجف أعلى 2-3 سم.',
 };
 
 export const LEAVES = {
@@ -114,43 +116,6 @@ export const PLANTS = [
       est: { days: 30, every: 2, amount: 10 }, test: 'احفر 5-10 سم: جافة = اسقِ.', warn: 'تصفرّ أوراقها بالتربة القلوية — حديد مخلبي.' },
     feed: [F.iron('10 غم حول النبات مذاب بالماء.', [3, 9]), F.manure('3-5 كغم')], tol: { heat: 'جيد', cold: 'جيد', salt: 'متوسط' }, care: 'قص الأزهار الذابلة يجدد التزهير.', check: 30 }),
 
-  // ───────────── مثمرة ونخيل ─────────────
-  P({ id: 'date_palm', ar: 'نخلة', alt: ['نخيل', 'نخلة تمر', 'فسيلة'], sci: 'Phoenix dactylifera', cat: 'palm', env: 'out', light: 'full',
-    place: 'شمس كاملة، 3 أمتار عن الجدران.', soil: 'تتحمل الملوحة والتربة الكلسية.',
-    w: { m: 'basin', leaves: 'never', unit: 'L', S: [4, 40], M: [10, 40], W: [20, 30], mature: [2, 3], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 45, every: 2, amount: 25 }, test: 'احفر 15 سم بالحوض: جافة = اسقِ.', warn: 'الفسيلة الجديدة لا تتحمل العطش أول سنة. لا تغمر قلب النخلة بالماء.' },
-    feed: [F.manure('15-20 كغم'), F.npk('200 غم حول الحوض.', [3, 6], 90)], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'ممتاز' }, care: 'إزالة السعف اليابس فقط بالشتاء.', check: 30 }),
-  P({ id: 'citrus', ar: 'حمضيات (برتقال / ليمون / نارنج / لالنكي)', alt: ['برتقال', 'ليمون', 'نارنج', 'لالنكي', 'حامض', 'ليمون حامض', 'سندي'], sci: 'Citrus spp.', cat: 'fruit', env: 'out', light: 'full',
-    place: 'شمس كاملة ومكان محمي من رياح الشتاء الباردة (جنب جدار جنوبي ممتاز).', soil: 'جيدة التصريف — التغدق يعفن الجذور.',
-    w: { m: 'ring', leaves: 'never', unit: 'L', S: [3, 25], M: [6, 25], W: [12, 20], mature: [1.5, 2.5], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 30, every: 2, amount: 15 }, test: 'احفر 10 سم: إذا جافة اسقِ. لا تسقِ والتربة رطبة.', warn: 'لا يلمس الماء الجذع (تصمغ وتعفن). اصفرار الورق مع عروق خضراء = نقص حديد (شائع جداً بالنجف).' },
-    feed: [F.manure('8-10 كغم'), F.npk('100-150 غم حول الحوض.', [2, 5, 8], 75), F.iron('15-20 غم مذاب بالماء حول الحوض.', [3, 6], 90)],
-    tol: { heat: 'جيد', cold: 'متوسط (غطّها بالصقيع)', salt: 'ضعيف' }, care: 'أزل السرطانات تحت منطقة التطعيم. التقليم خفيف بعد الحصاد.', check: 21 }),
-  P({ id: 'pomegranate', ar: 'رمان', alt: ['رمانة', 'رمان'], sci: 'Punica granatum', cat: 'fruit', env: 'out', light: 'full',
-    place: 'شمس كاملة.', soil: 'يتحمل الملوحة والتربة الكلسية.',
-    w: { m: 'basin', leaves: 'never', unit: 'L', S: [4, 30], M: [8, 25], W: [21, 20], mature: [1.5, 2], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 30, every: 2, amount: 15 }, test: 'احفر 10 سم: جافة = اسقِ.', warn: 'السقي غير المنتظم (عطش ثم غرق) يسبب تشقق الثمار — حافظ على انتظام الجدول بالصيف.' },
-    feed: [F.manure('8-10 كغم'), F.potash('50 غم حول الحوض.', [5, 7], 45)], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: 'تقليم بالشتاء وإزالة الخلفات من القاعدة.', check: 30 }),
-  P({ id: 'fig', ar: 'تين', alt: ['تينة', 'تين'], sci: 'Ficus carica', cat: 'fruit', env: 'out', light: 'full',
-    place: 'شمس كاملة، 3 أمتار عن الأساسات.', soil: 'جيدة التصريف.',
-    w: { m: 'basin', leaves: 'never', unit: 'L', S: [4, 25], M: [8, 20], W: [21, 15], mature: [1.5, 2], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 30, every: 2, amount: 15 }, test: 'احفر 10 سم: جافة = اسقِ.', warn: 'تتساقط أوراقها بالشتاء (طبيعي) — قلل السقي جداً.' },
-    feed: [F.manure('8 كغم'), F.npk('80 غم.', [3, 5], 60)], tol: { heat: 'جيد', cold: 'جيد', salt: 'جيد' }, care: 'تقليم خفيف بالشتاء.', check: 30 }),
-  P({ id: 'olive', ar: 'زيتون', alt: ['زيتونة'], sci: 'Olea europaea', cat: 'fruit', env: 'out', light: 'full',
-    place: 'شمس كاملة.', soil: 'جيدة التصريف جداً، يتحمل الكلس.',
-    w: { m: 'basin', leaves: 'never', unit: 'L', S: [7, 40], M: [14, 35], W: [30, 25], mature: [1.5, 2], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 45, every: 3, amount: 20 }, test: 'احفر 15 سم: جافة تماماً = اسقِ.', warn: 'أكبر خطر عليه هو السقي الزائد.' },
-    feed: [F.manure('10 كغم'), F.npk('100 غم.', [3], 365)], tol: { heat: 'ممتاز', cold: 'ممتاز', salt: 'جيد' }, care: 'تقليم بعد الحصاد أو نهاية الشتاء.', check: 30 }),
-  P({ id: 'grape', ar: 'عنب', alt: ['كرمة', 'دالية', 'عنب'], sci: 'Vitis vinifera', cat: 'climber', env: 'out', light: 'full',
-    place: 'شمس كاملة مع مسند/عريشة.', soil: 'جيدة التصريف.',
-    w: { m: 'base', leaves: 'never', unit: 'L', S: [4, 25], M: [7, 20], W: [21, 15], mature: [1.5, 1.5], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 30, every: 2, amount: 12 }, test: 'احفر 10 سم: جافة = اسقِ.', warn: 'بلّ الورق يسبب البياض الدقيقي. قلل السقي أسبوعين قبل القطاف لزيادة الحلاوة.' },
-    feed: [F.manure('8 كغم'), F.potash('50 غم.', [5, 6], 30)], tol: { heat: 'جيد', cold: 'ممتاز', salt: 'متوسط' }, care: 'التقليم الرئيسي بكانون الثاني (السكون).', check: 21 }),
-  P({ id: 'sidr', ar: 'سدر (نبق)', alt: ['سدر', 'نبق', 'كنار'], sci: 'Ziziphus spina-christi', cat: 'fruit', env: 'out', light: 'full',
-    place: 'شمس كاملة، 4 أمتار عن الأساسات.', soil: 'يتحمل الملوحة والتربة الفقيرة.',
-    w: { m: 'basin', leaves: 'never', unit: 'L', S: [7, 40], M: [14, 30], W: [30, 25], mature: [1.5, 2], slot: { S: 'early', M: 'morning', W: 'midmorning' },
-      est: { days: 30, every: 3, amount: 20 }, test: 'احفر 15 سم.', warn: 'شوكية. شديدة التحمل للعطش.' },
-    feed: [F.manure('8 كغم')], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'ممتاز' }, care: 'تقليم الشتاء.', check: 30 }),
 
   // ───────────── ورد وشجيرات مزهرة ─────────────
   P({ id: 'rose', ar: 'ورد جوري', alt: ['جوري', 'ورد', 'ورد جوري', 'روز'], sci: 'Rosa × hybrida / Rosa damascena', cat: 'flower', env: 'out', light: 'fullpm',
@@ -385,6 +350,119 @@ export const PLANTS = [
     w: { m: 'can', leaves: 'never', unit: 'pot', S: [5], M: [7], W: [10], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
       test: 'اسقِ لما يجف أعلى 2-3 سم.', warn: 'أطراف بنية = ماء مالح/فلورايد.' },
     feed: [F.indoor()], tol: { heat: 'جيد', cold: 'جيد', salt: 'ضعيف' }, care: '', check: 30 }),
+  // ───────────── نباتات داخلية إضافية ─────────────
+  P({ id: 'ficus_lyrata', ar: 'فيكس ليراتا (الكمان)', alt: ['كمان', 'فيكس كمان', 'ليراتا', 'تين الكمان'], sci: 'Ficus lyrata', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'أقرب مكان لشباك مضيء بدون شمس ظهر مباشرة، وثابت — يكره النقل وتيار هواء المبردة/السبلت.', soil: 'تربة أصص جيدة التصريف مع بيرلايت.',
+    w: { m: 'can', leaves: 'wash', unit: 'pot', S: [6], M: [8], W: [12], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف أعلى 4-5 سم (أدخل إصبعك كاملاً).', warn: 'بقع بنية من الوسط = سقي زائد. أطراف بنية جافة = عطش أو جو جاف. تسقط أوراقها إذا نقلتها.' },
+    feed: [F.indoor()], tol: { heat: 'جيد', cold: 'ضعيف', salt: 'ضعيف' }, care: 'لفّ الأصيص ربع لفة كل أسبوعين حتى ينمو مستقيم. امسح الأوراق الكبيرة من الغبار.', check: 21 }),
+  P({ id: 'calathea', ar: 'كالاثيا', alt: ['كالاثيا', 'نبتة الصلاة', 'مارانتا'], sci: 'Calathea / Goeppertia spp.', cat: 'indoor', env: 'in', light: 'low',
+    place: 'ظل ساطع بعيد عن الشمس المباشرة (تبهت ألوانها وتحترق).', soil: 'تربة رطبة خفيفة غنية بالمادة العضوية.',
+    w: { m: 'can', leaves: 'mist', unit: 'pot', S: [3], M: [5], W: [7], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'التربة رطبة دائماً بدون تغدق — اسقِ لما يجف أعلى 2 سم.', warn: 'حساسة جداً لملوحة ماء الإسالة والكلور (أطراف بنية) — استعمل ماء RO أو ماء مترّك 24 ساعة. التفاف الأوراق = عطش أو جو جاف.' },
+    feed: [F.indoor([4, 6, 8])], tol: { heat: 'متوسط', cold: 'ضعيف', salt: 'ضعيف جداً' }, care: 'تحب الرطوبة: ضعها فوق صينية حصى وماء.', check: 14 }),
+  P({ id: 'peperomia', ar: 'بيبروميا', alt: ['بيبروميا', 'بيبروميا البطيخ'], sci: 'Peperomia spp.', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'ضوء ساطع غير مباشر، مكتب أو رف قرب شباك.', soil: 'تربة خفيفة جيدة التصريف جداً.',
+    w: { m: 'can', leaves: 'never', unit: 'pot', S: [7], M: [10], W: [14], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما تجف التربة تقريباً كلياً — أوراقها تخزن الماء.', warn: 'السقي الزائد يعفن الساق بسرعة.' },
+    feed: [F.indoor([4, 6, 8])], tol: { heat: 'جيد', cold: 'ضعيف', salt: 'متوسط' }, care: '', check: 30 }),
+  P({ id: 'chamaedorea', ar: 'نخلة الصالون (شاميدوريا)', alt: ['نخلة الصالون', 'شاميدوريا', 'كاميدوريا', 'نخيل الصالون'], sci: 'Chamaedorea elegans', cat: 'indoor', env: 'in', light: 'low',
+    place: 'زوايا البيت بإضاءة غير مباشرة — تتحمل الضوء الضعيف.', soil: 'تربة أصص جيدة التصريف.',
+    w: { m: 'can', leaves: 'mist', unit: 'pot', S: [5], M: [7], W: [10], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف أعلى 2-3 سم.', warn: 'العنكبوت الأحمر بالجو الجاف (نقط صفراء وخيوط) — رش الأوراق بالماء أسبوعياً.' },
+    feed: [F.indoor()], tol: { heat: 'جيد', cold: 'متوسط', salt: 'ضعيف' }, care: '', check: 30 }),
+  P({ id: 'rhapis', ar: 'نخيل رابيس', alt: ['رابيس', 'نخلة رابيس', 'نخيل الخيزران'], sci: 'Rhapis excelsa', cat: 'indoor', env: 'both', light: 'low',
+    place: 'داخل البيت بإضاءة متوسطة، أو بالحديقة بظل كامل.', soil: 'جيدة التصريف.',
+    w: { m: 'can', leaves: 'wash', unit: 'pot', S: [6], M: [8], W: [12], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف أعلى 3 سم.', warn: 'أطراف بنية = ملوحة الماء أو جفاف.' },
+    feed: [F.indoor([4, 6, 8])], tol: { heat: 'جيد', cold: 'جيد', salt: 'متوسط' }, care: '', check: 30 }),
+  P({ id: 'dracaena_marginata', ar: 'دراسينا مارجيناتا', alt: ['مارجيناتا', 'دراسينا حمراء', 'شجرة التنين'], sci: 'Dracaena marginata', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'ضوء ساطع غير مباشر.', soil: 'جيدة التصريف.',
+    w: { m: 'can', leaves: 'wash', unit: 'pot', S: [8], M: [10], W: [14], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف نصف التربة تقريباً.', warn: 'حساسة للفلورايد وملوحة الماء — ماء مفلتر أو مترّك.' },
+    feed: [F.indoor([4, 6, 8])], tol: { heat: 'جيد', cold: 'متوسط', salt: 'ضعيف' }, care: '', check: 30 }),
+  P({ id: 'lucky_bamboo', ar: 'خيزران الحظ (بامبو)', alt: ['بامبو', 'خيزران الحظ', 'بامبو الحظ', 'لاكي بامبو'], sci: 'Dracaena sanderiana', cat: 'indoor', env: 'in', light: 'low',
+    place: 'ضوء غير مباشر — الشمس المباشرة تصفّر سيقانه.', soil: 'ماء مع حصى، أو تربة أصص.',
+    w: { m: 'vase', leaves: 'never', unit: 'pot', S: [7], M: [7], W: [10], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'بالماء: الماء صافي وبدون رائحة. بالتربة: يجف أعلى 2 سم.', warn: 'اصفرار الساق من الأسفل = تعفن، اقطع الجزء المصاب. ماء الإسالة مباشرة يصفّر الأوراق.' },
+    feed: [{ n: 'سماد سائل مخفف جداً', f: 'للنباتات المائية', mo: [4, 7], d: 60, how: 'قطرة أو قطرتين من السماد السائل بماء الإناء فقط.' }], tol: { heat: 'جيد', cold: 'ضعيف', salt: 'ضعيف' }, care: '', check: 30 }),
+  P({ id: 'orchid', ar: 'أوركيد (فلينوبسس)', alt: ['أوركيد', 'اوركيد', 'السحلبية', 'فلينوبسس'], sci: 'Phalaenopsis spp.', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'شباك شرقي بضوء صباحي خفيف، بعيد عن شمس الظهر وهواء السبلت.', soil: 'لحاء صنوبر (ليس تربة عادية).',
+    w: { m: 'orchid', leaves: 'never', unit: 'pot', S: [6], M: [8], W: [12], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'الجذور داخل الأصيص الشفاف صارت فضية/رمادية = يحتاج سقي. خضراء = بعده رطب.', warn: 'لا تخلي ماء بقلب النبتة (يعفن). الجذور البنية الطرية = سقي زائد.' },
+    feed: [{ n: 'سماد أوركيد (أو 20-20-20 ربع التركيز)', f: 'متوازن مخفف', mo: [3, 4, 5, 6, 7, 8, 9, 10], d: 14, how: 'ربع الجرعة المكتوبة بماء النقع، مرة كل أسبوعين.' }], tol: { heat: 'متوسط', cold: 'ضعيف', salt: 'ضعيف جداً' }, care: 'بعد ذبول الزهور اقطع الساق فوق ثاني عقدة.', check: 21 }),
+  P({ id: 'fern', ar: 'سرخس (فيرن)', alt: ['سرخس', 'فيرن', 'خنشار', 'سرخس بوسطن'], sci: 'Nephrolepis exaltata', cat: 'indoor', env: 'both', light: 'low',
+    place: 'ظل ساطع ورطوبة — حمام مضيء أو قرب شباك شمالي.', soil: 'تربة رطبة غنية.',
+    w: { m: 'can', leaves: 'mist', unit: 'pot', S: [2], M: [4], W: [6], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'التربة رطبة دائماً — لا تخليها تجف.', warn: 'جفاف التربة مرة وحدة يحرق الأوراق. رذاذ يومي بالصيف مع المبردة/السبلت.' },
+    feed: [F.indoor([4, 5, 6, 7, 8])], tol: { heat: 'متوسط', cold: 'متوسط', salt: 'ضعيف' }, care: '', check: 14 }),
+  P({ id: 'alocasia', ar: 'ألوكاسيا (أذن الفيل)', alt: ['ألوكاسيا', 'الوكاسيا', 'أذن الفيل', 'كلوكاسيا'], sci: 'Alocasia spp.', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'ضوء ساطع غير مباشر ورطوبة.', soil: 'خفيفة جيدة التصريف.',
+    w: { m: 'can', leaves: 'wash', unit: 'pot', S: [5], M: [7], W: [12], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف أعلى 3 سم.', warn: 'بالشتاء ممكن تدخل سكون وتسقط أوراقها — قلل السقي ولا ترميها. سامة إذا أُكلت.' },
+    feed: [F.indoor()], tol: { heat: 'جيد', cold: 'ضعيف', salt: 'ضعيف' }, care: '', check: 21 }),
+  P({ id: 'begonia', ar: 'بيغونيا', alt: ['بيغونيا', 'بيجونيا'], sci: 'Begonia spp.', cat: 'indoor', env: 'both', light: 'bright',
+    place: 'ضوء ساطع غير مباشر.', soil: 'خفيفة جيدة التصريف.',
+    w: { m: 'can', leaves: 'never', unit: 'pot', S: [4], M: [6], W: [9], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف أعلى 2 سم.', warn: 'لا ترش الأوراق (بياض دقيقي). السقي الزائد يعفن الساق.' },
+    feed: [F.indoor()], tol: { heat: 'متوسط', cold: 'ضعيف', salt: 'ضعيف' }, care: 'قص الأزهار الذابلة.', check: 21 }),
+  P({ id: 'cyclamen', ar: 'سيكلامن (بخور مريم)', alt: ['سيكلامن', 'بخور مريم'], sci: 'Cyclamen persicum', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'مكان بارد مضيء (يحب 10-18°م) — بعيد عن المدفأة. موسمه الشتاء.', soil: 'خفيفة.',
+    w: { m: 'bottom', leaves: 'never', unit: 'pot', S: null, M: [5], W: [5], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف أعلى 2 سم أو يخف وزن الأصيص.', warn: 'لا تصب الماء على الدرنة (يعفن). بالصيف يسكن ويذبل — طبيعي.' },
+    feed: [F.indoor([11, 12, 1, 2, 3])], tol: { heat: 'ضعيف جداً', cold: 'جيد', salt: 'ضعيف' }, care: 'اقلع الأزهار الذابلة من أساسها.', check: 21 }),
+  P({ id: 'hoya', ar: 'هويا (زهرة الشمع)', alt: ['هويا', 'زهرة الشمع'], sci: 'Hoya carnosa', cat: 'indoor', env: 'in', light: 'bright',
+    place: 'ضوء ساطع، معلقة أو على سند.', soil: 'خفيفة جداً.',
+    w: { m: 'can', leaves: 'never', unit: 'pot', S: [8], M: [10], W: [14], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما تجف التربة تقريباً كلياً.', warn: 'لا تقص سيقان الزهور القديمة — تزهر منها مرة ثانية.' },
+    feed: [F.indoor([4, 6, 8])], tol: { heat: 'جيد', cold: 'ضعيف', salt: 'متوسط' }, care: '', check: 30 }),
+  P({ id: 'kalanchoe', ar: 'كالانشو', alt: ['كالانشو', 'كلانشو'], sci: 'Kalanchoe blossfeldiana', cat: 'succulent', env: 'both', light: 'bright',
+    place: 'ضوء ساطع أو شمس صباح.', soil: 'تربة صباريات.',
+    w: { m: 'can', leaves: 'never', unit: 'pot', S: [7], M: [10], W: [14], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما تجف التربة كلياً.', warn: 'نبات عصاري — السقي الزائد يقتله.' },
+    feed: [F.indoor([3, 5, 9])], tol: { heat: 'جيد', cold: 'متوسط', salt: 'متوسط' }, care: 'قص الأزهار الذابلة.', check: 30 }),
+  P({ id: 'yucca', ar: 'يوكا', alt: ['يوكا', 'يوكا الفيل'], sci: 'Yucca elephantipes', cat: 'indoor', env: 'both', light: 'full',
+    place: 'داخل البيت بأقوى ضوء، أو بالحديقة شمس كاملة.', soil: 'جيدة التصريف جداً.',
+    w: { m: 'can', leaves: 'never', unit: 'pot', S: [10], M: [14], W: [21], slot: { S: 'morning', M: 'morning', W: 'midmorning' },
+      test: 'اسقِ لما يجف ثلثين التربة.', warn: 'أكثر ما يقتلها السقي الزائد.' },
+    feed: [F.indoor([4, 7])], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: '', check: 45 }),
+
+  // ───────────── زينة خارجية إضافية ─────────────
+  P({ id: 'strelitzia', ar: 'عصفور الجنة (ستريليتزيا)', alt: ['عصفور الجنة', 'ستريليتزيا', 'طائر الجنة'], sci: 'Strelitzia reginae / nicolai', cat: 'shrub', env: 'both', light: 'fullpm',
+    place: 'بالحديقة: شمس صباح وظل الظهر. بالبيت: أقوى ضوء ممكن.', soil: 'خصبة جيدة التصريف.',
+    w: { m: 'base', leaves: 'wash', unit: 'L', S: [3, 10], M: [5, 8], W: [10, 6], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 21, every: 2, amount: 6 }, test: 'اسقِ لما يجف أعلى 5 سم.', warn: 'تشقق الأوراق طبيعي مع الهواء. احمها من الصقيع.' },
+    feed: [F.npk('30 غم للنبتة.', [3, 5, 7, 9], 45), F.manure('3 كغم')], tol: { heat: 'جيد', cold: 'متوسط', salt: 'متوسط' }, care: 'أزل الأوراق اليابسة.', check: 30 }),
+  P({ id: 'cycas', ar: 'سيكاس', alt: ['سيكاس', 'سيكس', 'نخلة الساغو'], sci: 'Cycas revoluta', cat: 'palm', env: 'both', light: 'full',
+    place: 'شمس كاملة أو جزئية. ⚠️ سام جداً للأطفال والحيوانات.', soil: 'جيدة التصريف جداً.',
+    w: { m: 'base', leaves: 'never', unit: 'L', S: [5, 12], M: [10, 10], W: [21, 8], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 30, every: 3, amount: 6 }, test: 'اسقِ لما يجف أعلى 5-7 سم.', warn: 'لا تصب الماء على قلب النبتة. اصفرار الأوراق الجديدة = نقص منغنيز.' },
+    feed: [{ n: 'سماد نخيل (مع منغنيز ومغنيسيوم)', f: 'للنخيل', mo: [4, 7], d: 90, how: '50 غم حول النبتة ثم سقي.' }], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: 'قص الأوراق اليابسة فقط.', check: 45 }),
+  P({ id: 'washingtonia', ar: 'نخيل واشنطونيا', alt: ['واشنطونيا', 'نخلة واشنطن', 'نخيل مروحي'], sci: 'Washingtonia robusta / filifera', cat: 'palm', env: 'out', light: 'full',
+    place: 'شمس كاملة، 3 أمتار عن الجدران.', soil: 'تتحمل أغلب الأتربة والملوحة.',
+    w: { m: 'basin', leaves: 'never', unit: 'L', S: [4, 30], M: [8, 25], W: [15, 20], mature: [1.5, 2], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 45, every: 2, amount: 20 }, test: 'احفر 10-15 سم: جافة = اسقِ.', warn: 'لا تغمر قلب النخلة.' },
+    feed: [F.manure('10 كغم'), { n: 'سماد نخيل', f: 'للنخيل', mo: [3, 6], d: 90, how: '150 غم حول الحوض.' }], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: 'إزالة السعف اليابس بالشتاء.', check: 45 }),
+  P({ id: 'duranta', ar: 'ديورانتا (سياج)', alt: ['ديورانتا', 'دورانتا', 'ديورانتا ذهبية'], sci: 'Duranta erecta', cat: 'shrub', env: 'out', light: 'full',
+    place: 'شمس كاملة — ممتازة للأسيجة والتشكيل.', soil: 'أي تربة جيدة التصريف.',
+    w: { m: 'base', leaves: 'ok', unit: 'L', S: [3, 8], M: [6, 6], W: [12, 5], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 21, every: 2, amount: 4 }, test: 'احفر 5 سم: جافة = اسقِ.', warn: 'ثمارها سامة.' },
+    feed: [F.npk('20 غم للشجيرة.', [3, 5, 7, 9], 45)], tol: { heat: 'ممتاز', cold: 'متوسط', salt: 'جيد' }, care: 'قص تشكيلي كل شهر بالصيف.', check: 30 }),
+  P({ id: 'myrtus', ar: 'ياس (آس)', alt: ['ياس', 'آس', 'مرسين', 'ريحان الآس'], sci: 'Myrtus communis', cat: 'shrub', env: 'out', light: 'full',
+    place: 'شمس كاملة أو جزئية، ممتاز كسياج عطري.', soil: 'جيدة التصريف، يتحمل الكلس.',
+    w: { m: 'base', leaves: 'never', unit: 'L', S: [4, 8], M: [7, 6], W: [14, 5], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 21, every: 2, amount: 4 }, test: 'احفر 5 سم.', warn: '' },
+    feed: [F.manure('3 كغم')], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: 'قص تشكيلي.', check: 30 }),
+  P({ id: 'gazania', ar: 'جازانيا', alt: ['جازانيا', 'غازانيا'], sci: 'Gazania rigens', cat: 'seasonal', env: 'out', light: 'full',
+    place: 'شمس كاملة — تتفتح بالشمس. تتحمل الحر والعطش.', soil: 'رملية جيدة التصريف.',
+    w: { m: 'base', leaves: 'never', unit: 'L', S: [4, 1], M: [6, 0.8], W: [10, 0.6], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 14, every: 1, amount: 0.5 }, test: 'اسقِ لما تجف التربة.', warn: 'السقي الزائد يعفنها.' },
+    feed: [F.potash('5 غم لكل لتر.', [3, 4, 9, 10], 30)], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: '', check: 30 }),
+  P({ id: 'agave', ar: 'أغاف', alt: ['أغاف', 'اغاف', 'صبار الأغاف'], sci: 'Agave spp.', cat: 'succulent', env: 'out', light: 'full',
+    place: 'شمس كاملة، بعيد عن ممرات الأطفال (أطرافه شوكية).', soil: 'رملية جيدة التصريف جداً.',
+    w: { m: 'soak', leaves: 'never', unit: 'L', S: [14, 5], M: [21, 4], W: [30, 3], slot: { S: 'early', M: 'morning', W: 'midmorning' },
+      est: { days: 21, every: 7, amount: 2 }, test: 'اسقِ فقط لما تجف التربة كلياً.', warn: '' },
+    feed: [], tol: { heat: 'ممتاز', cold: 'جيد', salt: 'جيد' }, care: '', check: 60 }),
 ];
 
 export const PLANT_BY_ID = Object.fromEntries(PLANTS.map((p) => [p.id, p]));
@@ -417,6 +495,24 @@ export const SLOTS = {
   morning: 'الصبح (6:00–9:00)',
   midmorning: 'الضحى (9:00–11:00) حتى تجف التربة السطحية قبل برد الليل',
 };
+
+// ─── الطقس الحقيقي للنجف (Open-Meteo مجاني بدون مفتاح) ───
+export const NAJAF = { lat: 32.03, lon: 44.35 };
+export async function fetchWeather() {
+  const u = `https://api.open-meteo.com/v1/forecast?latitude=${NAJAF.lat}&longitude=${NAJAF.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=Asia%2FBaghdad&forecast_days=2`;
+  const r = await fetch(u);
+  if (!r.ok) throw new Error('weather ' + r.status);
+  const d = (await r.json()).daily;
+  const day = (i) => ({ date: d.time[i], tmax: d.temperature_2m_max[i], tmin: d.temperature_2m_min[i], rain: d.precipitation_sum[i], wind: d.wind_speed_10m_max[i] });
+  return { today: day(0), tomorrow: day(1) };
+}
+export const HEAT_DAY = 45; // °م
+export const RAIN_DAY = 4; // ملم — يكفي لتأجيل سقي الخارجي المزروع بالأرض
+export const FROST_NIGHT = 3; // °م
+export function isOutdoorGround(plant) { const p = profileOf(plant); return !(p?.env === 'in' || plant.indoor) && !plant.potted; }
+export function isOutdoor(plant) { const p = profileOf(plant); return !(p?.env === 'in' || plant.indoor); }
+export function coldSensitive(plant) { return /ضعيف|متوسط/.test(profileOf(plant)?.tol?.cold || ''); }
+export function heatSensitive(plant) { return /ضعيف|متوسط/.test(profileOf(plant)?.tol?.heat || ''); }
 
 // تاريخ اليوم بتوقيت بغداد بصيغة YYYY-MM-DD
 export function todayStr(d = new Date()) {
@@ -484,6 +580,11 @@ export function waterPlan(plant, date, settings = {}) {
     amountText = w.unit === 'Lm2' && !potted ? `${litersEach} لتر لكل م² (معدّل)` : `${litersEach} لتر (معدّل يدوياً)`;
   }
 
+  // تعديل الطقس: يوم حار جداً يقرّب موعد السقي للنباتات الخارجية
+  const wx = settings.weather?.today;
+  if (wx && wx.date === date && wx.tmax >= HEAT_DAY && !(p.env === 'in' || plant.indoor) && every > 1) {
+    every = every * 0.7; notes.push(`حر شديد اليوم (${Math.round(wx.tmax)}°م): السقي أقرب من المعتاد`);
+  }
   every = Math.max(1, Math.round(every));
   const total = litersEach != null ? round1(litersEach * count) : null;
   const minutes = flow > 0 && total ? Math.max(0.5, Math.round((total / flow) * 2) / 2) : null;
@@ -492,13 +593,27 @@ export function waterPlan(plant, date, settings = {}) {
   return {
     season, seasonName: SEASON_NAMES[season], every, litersEach, total, minutes, count,
     unit: potted ? 'pot' : w.unit, amountText,
-    method: METHODS[potted ? 'can' : w.m] || w.m,
+    method: METHODS[potted && ['base', 'basin', 'ring', 'lawn'].includes(w.m) ? 'can' : w.m] || w.m,
     leaves: LEAVES[w.leaves] || null,
     slot: SLOTS[(w.slot && w.slot[season]) || 'morning'],
     test: w.test, warn: w.warn, establishing, notes, inside,
     checkFirst: inside || potted, // الداخلية: افحص بالإصبع قبل السقي
   };
 }
+
+// ساعة التذكير لكل نبات (بتوقيت بغداد) — تلقائية حسب النوع والموسم، أو يحددها المستخدم
+export const AUTO_HOURS = { early: 6, morning: 8, midmorning: 10 };
+export function notifyHour(plant, date, type = 'water') {
+  if (plant.notifyHour != null && plant.notifyHour !== '') return Number(plant.notifyHour);
+  const p = profileOf(plant);
+  if (type === 'check') return 16; // ضوء النهار مناسب للتصوير
+  const inside = p?.env === 'in' || plant.indoor;
+  if (inside) return 9;
+  const season = seasonOf(monthOf(date));
+  return AUTO_HOURS[(p?.w?.slot && p.w.slot[season]) || 'morning'] ?? 8;
+}
+export function fmtHour(h) { const hh = ((h + 11) % 12) + 1; return `${hh}:00 ${h < 12 ? 'الصبح' : h < 16 ? 'الظهر' : h < 19 ? 'العصر' : 'بالليل'}`; }
+export function hourNow(d = new Date()) { return Number(new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false }).format(d)) % 24; }
 
 // هل السقي مستحق بهذا التاريخ؟
 export function waterDue(plant, date, settings) {
@@ -531,6 +646,12 @@ export function feedDue(plant, date) {
 
 export function checkDue(plant, date) {
   const p = profileOf(plant);
+  const age = diffDays(plant.plantedDate || plant.createdDate || date, date);
+  // النبتة الجديدة (أول شهر) أخطر فترة: فحص بعد 3 أيام ثم كل أسبوع
+  if (age >= 0 && age < 30) {
+    if (!plant.lastCheckup) return age >= 3 ? { every: 7, newPlant: true } : null;
+    return diffDays(plant.lastCheckup, date) >= 7 ? { every: 7, newPlant: true } : null;
+  }
   const every = Number(plant.checkEvery) || p?.check || 21;
   if (!plant.lastCheckup) {
     const start = plant.plantedDate || plant.createdDate || date;
@@ -547,13 +668,13 @@ export function tasksFor(plants, date, settings = {}) {
     const p = profileOf(pl);
     if (!p) continue;
     const wd = waterDue(pl, date, settings);
-    if (wd) tasks.push({ type: 'water', plant: pl, profile: p, ...wd });
-    for (const f of feedDue(pl, date)) tasks.push({ type: 'feed', plant: pl, profile: p, feed: f });
+    if (wd) tasks.push({ type: 'water', plant: pl, profile: p, hour: notifyHour(pl, date), ...wd });
+    for (const f of feedDue(pl, date)) tasks.push({ type: 'feed', plant: pl, profile: p, hour: notifyHour(pl, date, 'feed'), feed: f });
     const cd = checkDue(pl, date);
-    if (cd) tasks.push({ type: 'check', plant: pl, profile: p, ...cd });
+    if (cd) tasks.push({ type: 'check', plant: pl, profile: p, hour: notifyHour(pl, date, 'check'), ...cd });
   }
   const order = { water: 0, feed: 1, check: 2 };
-  tasks.sort((a, b) => order[a.type] - order[b.type] || (b.overdue || 0) - (a.overdue || 0));
+  tasks.sort((a, b) => order[a.type] - order[b.type] || a.hour - b.hour || (b.overdue || 0) - (a.overdue || 0));
   return tasks;
 }
 
@@ -577,17 +698,33 @@ export function plantLabel(plant) {
 
 // نص إشعار سقي واحد
 export function waterNotifText(t) {
-  const pl = t.plant; const pn = t.plan;
+  const pl = t.plant; const pn = t.plan; const w = profileOf(pl).w;
   const where = pl.zone ? ` — ${pl.zone}` : '';
-  const amt = pn.unit === 'pot'
-    ? `${pn.checkFirst ? 'افحص بإصبعك أولاً، إذا جافة: ' : ''}${pn.amountText}${pn.count > 1 ? ` لكل أصيص (${pn.count})` : ''}`
-    : pn.unit === 'Lm2'
-      ? `${pn.total} لتر للمساحة (${pn.count} م² × ${pn.litersEach})`
-      : `${pn.total} لتر${pn.count > 1 ? ` (${pn.litersEach} × ${pn.count})` : ''}`;
+  const special = ['orchid', 'vase', 'bottom'].includes(w.m);
+  let amt;
+  if (pn.unit === 'pot') {
+    amt = (pn.checkFirst && pn.test ? `👆 افحص أولاً: ${pn.test}\n` : '') + (special ? '' : `الكمية: ${pn.amountText}${pn.count > 1 ? ` لكل أصيص (${pn.count})` : ''}`);
+  } else if (pn.unit === 'Lm2') amt = `الكمية: ${pn.total} لتر للمساحة (${pn.count} م² × ${pn.litersEach})`;
+  else amt = `الكمية: ${pn.total} لتر${pn.count > 1 ? ` (${pn.litersEach} × ${pn.count})` : ''}`;
   const mins = pn.minutes && pn.unit !== 'pot' ? ` ≈ ${pn.minutes} دقيقة صوندة` : '';
-  const leaves = pn.leaves ? ` • ${pn.leaves.t}` : '';
   return {
     title: `💧 اسقِ ${plantLabel(pl)}${where}`,
-    body: `${amt}${mins}${leaves}\n${pn.method}\n⏰ ${pn.slot}${t.overdue ? `\n⚠️ متأخر ${t.overdue} يوم` : ''}`,
+    body: [amt.trim() + mins, `الطريقة: ${pn.method}`, pn.leaves ? `الأوراق: ${pn.leaves.t}` : '', t.overdue ? `⚠️ متأخر ${t.overdue} يوم` : ''].filter(Boolean).join('\n'),
   };
+}
+
+// إشعار واحد لكل نبتة يجمع مهامها لهذا اليوم (سقي/سماد/فحص)
+export function plantNotif(plantTasks) {
+  const pl = plantTasks[0].plant;
+  const where = pl.zone ? ` — ${pl.zone}` : '';
+  const types = new Set(plantTasks.map((t) => t.type));
+  const icon = types.has('water') ? '💧' : types.has('feed') ? '🧪' : '📷';
+  const verbs = [types.has('water') && 'سقي', types.has('feed') && 'تسميد', types.has('check') && 'فحص بالصور'].filter(Boolean).join(' + ');
+  const lines = [];
+  for (const t of plantTasks) {
+    if (t.type === 'water') { const n = waterNotifText(t); lines.push(n.body); }
+    else if (t.type === 'feed') lines.push(`🧪 ${t.feed.n}: ${t.feed.how}${profileOf(pl)?.w?.unit === 'Lm2' && !pl.potted ? ` (المساحة ${pl.count || 1} م²)` : Number(pl.count) > 1 ? ` (لكل نبتة — العدد ${pl.count})` : ''}\nاسقِ قبل التسميد إذا التربة جافة.`);
+    else if (t.type === 'check') lines.push('📷 صوّر النبتة كاملة + ورقة قريبة وافحصها من التطبيق.');
+  }
+  return { title: `${icon} ${plantLabel(pl)}${where}: ${verbs} اليوم`, body: lines.join('\n'), tag: `p-${pl.id}` };
 }

@@ -108,7 +108,7 @@ ul.clean { margin: 6px 0; padding-inline-start: 20px; }
   <button data-tab="settings"><span>⚙️</span>الإعدادات</button>
 </nav>
 <script type="module">
-import { PLANTS, PLANT_BY_ID, CATS, LIGHT, METHODS, LEAVES, SEASON_NAMES, seasonOf, matchScientific, todayStr, addDays, diffDays, monthOf, profileOf, waterPlan, tasksFor, forecast, plantLabel, feedDue } from './engine.js';
+import { CATS, FROST_NIGHT, HEAT_DAY, LEAVES, LIGHT, METHODS, PLANTS, PLANT_BY_ID, SEASON_NAMES, addDays, diffDays, feedDue, fetchWeather, fmtHour, forecast, matchScientific, monthOf, notifyHour, plantLabel, profileOf, seasonOf, tasksFor, todayStr, waterPlan } from './engine.js?v=3';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, getDocs, getDoc, serverTimestamp, deleteField } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -133,34 +133,7 @@ function loading(msg) { return `<div class="loading"><div class="spinner"></div>
 const S = { user: null, plants: [], settings: { zones: [] }, todayLogs: [], tab: 'today', stack: [], unsub: [] };
 let app, auth, db;
 
-if (!CFG.firebase?.apiKey || !CFG.firebase?.projectId) { renderSetup(); throw new Error('setup'); }
-
-function parseFirebaseConfig(txt) {
-  const out = {};
-  for (const k of ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']) {
-    const m = txt.match(new RegExp(k + '\\s*[:=]\\s*["\'`]([^"\'`]+)["\'`]'));
-    if (m) out[k] = m[1].trim();
-  }
-  return out;
-}
-function renderSetup() {
-  document.querySelector('nav.tabs').classList.add('hidden');
-  setHead('🌿 مهندس حديقتي', 'الإعداد لأول مرة');
-  $app.innerHTML = `<div class="card"><h3>⚙️ ربط Firebase</h3>
-    <p class="muted">من Firebase Console ← Project settings ← Your apps، انسخ كود <b>firebaseConfig</b> كله والصقه هنا.</p>
-    <textarea id="cfg" dir="ltr" style="min-height:160px" placeholder="const firebaseConfig = { apiKey: ... }"></textarea>
-    <label>مفتاح الإشعارات (VAPID key)</label>
-    <p class="muted">Project settings ← Cloud Messaging ← Web Push certificates ← Key pair</p>
-    <input id="vapid" dir="ltr" placeholder="B...">
-    <button class="btn" id="savecfg" style="width:100%;margin-top:14px">حفظ وتشغيل</button></div>`;
-  document.getElementById('savecfg').onclick = () => {
-    const fb = parseFirebaseConfig(document.getElementById('cfg').value);
-    if (!fb.apiKey || !fb.projectId || !fb.appId) return toast('الكود ناقص — انسخ firebaseConfig كامل');
-    const v = document.getElementById('vapid').value.trim();
-    localStorage.setItem('garden_cfg', JSON.stringify({ firebase: fb, vapidKey: v }));
-    location.reload();
-  };
-}
+if (!CFG.firebase?.apiKey) { $app.innerHTML = '<div class="card">إعداد Firebase ناقص.</div>'; throw new Error('setup'); }
 
 app = initializeApp(CFG.firebase);
 auth = getAuth(app);
@@ -180,6 +153,7 @@ onAuthStateChanged(auth, (u) => {
   S.unsub.push(onSnapshot(query(uc('logs'), where('date', '==', todayStr())), (snap) => { S.todayLogs = snap.docs.map((d) => ({ id: d.id, ...d.data() })); rerender(); }));
   go(S.tab);
   setupForegroundMessages();
+  fetchWeather().then((w) => { S.weather = w; rerender(); }).catch(() => {});
 });
 
 // ─────────────── التنقل ───────────────
@@ -242,7 +216,8 @@ function renderToday() {
     bindPushHint();
     return;
   }
-  const tasks = tasksFor(active, t, S.settings);
+  const settingsW = { ...S.settings, weather: S.weather };
+  const tasks = tasksFor(active, t, settingsW);
   const water = tasks.filter((x) => x.type === 'water'); const feed = tasks.filter((x) => x.type === 'feed'); const check = tasks.filter((x) => x.type === 'check');
   const totalL = water.filter((x) => x.plan.unit !== 'pot').reduce((a, x) => a + (x.plan.total || 0), 0);
   const totalMin = S.settings.flowLpm ? Math.round(totalL / S.settings.flowLpm) : null;
@@ -250,6 +225,14 @@ function renderToday() {
   const doneF = S.todayLogs.filter((l) => l.type === 'feed').length;
 
   let html = pushHint();
+  const w = S.weather;
+  if (w) {
+    const alerts = [];
+    if (w.today.rain >= 8) alerts.push(`🌧 مطر متوقع ${Math.round(w.today.rain)} ملم — سقي الخارجي المزروع بالأرض يتأجل تلقائياً.`);
+    if (w.today.tmax >= HEAT_DAY) alerts.push('🔥 حر شديد: ظلّل النباتات الحساسة 11–4، وافحص الأصص الخارجية العصر.');
+    if (w.tomorrow.tmin <= FROST_NIGHT) alerts.push(`❄️ برد الليلة ${Math.round(w.tomorrow.tmin)}°م: غطِّ النباتات الحساسة قبل الغروب.`);
+    html += `<div class="card" style="padding:10px 14px"><b>🌤 النجف اليوم:</b> ${Math.round(w.today.tmin)}° – ${Math.round(w.today.tmax)}°م${w.today.rain >= 1 ? ` • مطر ${Math.round(w.today.rain)} ملم` : ''}${alerts.map((a) => `<div class="note">${a}</div>`).join('')}</div>`;
+  }
   html += `<div class="card"><div class="row"><div><div class="muted">سقي اليوم</div><div class="big">${water.length}</div></div>
     <div><div class="muted">ماء الصوندة</div><div class="big">${Math.round(totalL)} لتر</div></div>
     <div><div class="muted">الوقت التقريبي</div><div class="big">${totalMin != null ? totalMin + ' د' : '<a href="#" id="calib" style="font-size:14px">احسبه</a>'}</div></div></div>
@@ -261,7 +244,7 @@ function renderToday() {
   if (check.length) html += `<div class="sec-title">📷 فحص بالصور</div>` + check.map(checkCard).join('');
 
   // القادم
-  const next = []; for (let i = 1; i <= 3; i++) { const d = addDays(t, i); const n = tasksFor(active.map((p) => simulateDone(p, tasks, t)), d, S.settings).filter((x) => x.type === 'water').length; next.push(`<div>${relDay(d)}<br><b>${n}</b> سقي</div>`); }
+  const next = []; for (let i = 1; i <= 3; i++) { const d = addDays(t, i); const n = tasksFor(active.map((p) => simulateDone(p, tasks, t)), d, settingsW).filter((x) => x.type === 'water').length; next.push(`<div>${relDay(d)}<br><b>${n}</b> سقي</div>`); }
   html += `<div class="sec-title">📅 الأيام الجاية</div><div class="card"><div class="days">${next.join('')}</div></div>`;
   $app.innerHTML = html;
   bindPushHint();
@@ -284,7 +267,7 @@ function waterCard(x) {
     ${p.checkFirst ? `<div class="note blue">👆 افحص أولاً: ${esc(p.test)} — إذا التربة بعدها رطبة اضغط "مو محتاج".</div>` : ''}
     <p style="margin:8px 0 4px"><b>الطريقة:</b> ${esc(p.method)}</p>
     ${p.leaves ? `<p style="margin:4px 0"><b>الأوراق:</b> ${esc(p.leaves.t)}</p>` : ''}
-    <p style="margin:4px 0"><b>الوقت:</b> ${esc(p.slot)}</p>
+    <p style="margin:4px 0"><b>الوقت:</b> ${esc(p.slot)} <span class="pill water">🔔 ${fmtHour(x.hour)}</span></p>
     ${p.warn ? `<div class="note">⚠️ ${esc(p.warn)}</div>` : ''}
     <div class="row" style="margin-top:10px">
       <button class="btn water" data-act="water" data-id="${pl.id}">✓ سقيته</button>
@@ -304,7 +287,7 @@ function feedCard(x) {
 function checkCard(x) {
   const pl = x.plant;
   return `<div class="card task check"><div class="plant-row" data-open="${pl.id}">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3><div class="muted">${esc(pl.zone || '')}</div></div></div>
-    <p style="margin:8px 0">صوّر النبات (صورة كاملة + صورة قريبة للأوراق) حتى أفحص صحته.</p>
+    <p style="margin:8px 0">${x.newPlant ? '🌱 نبتة جديدة — أول شهر فحص أسبوعي لأنه أخطر فترة. ' : ''}صوّر النبات (صورة كاملة + صورة قريبة للأوراق) حتى أفحص صحته.</p>
     <div class="row"><button class="btn" style="background:var(--check)" data-act="check" data-id="${pl.id}">📷 فحص الآن</button></div></div>`;
 }
 function thumb(pl) { const p = profileOf(pl); return pl.thumb ? `<img class="thumb" src="${pl.thumb}" alt="">` : `<div class="thumb">${catIcon(p?.cat)}</div>`; }
@@ -361,7 +344,7 @@ function renderPlants() {
       const next = pl.lastWatered && plan && !plan.inactive ? addDays(pl.lastWatered, plan.every) : t;
       return `<div class="card plant-row" data-open="${pl.id}">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3>
         <div class="muted">${esc(profileOf(pl)?.ar || '')}${profileOf(pl)?.ai ? ' <span class="pill check">ذكاء اصطناعي</span>' : ''}</div>
-        <div class="muted">💧 ${plan?.inactive ? 'خارج موسمه' : `كل ${plan?.every} يوم — القادم: ${next <= t ? '<b>اليوم</b>' : relDay(next)}`}</div></div></div>`;
+        <div class="muted">💧 ${plan?.inactive ? 'خارج موسمه' : `كل ${plan?.every} يوم — القادم: ${next <= t ? '<b>اليوم</b>' : relDay(next)}`} • ${pl.notifyOff ? '🔕' : '🔔 ' + fmtHour(notifyHour(pl, t))}</div></div></div>`;
     }).join('');
   }
   const arch = S.plants.filter((p) => p.archived);
@@ -391,7 +374,8 @@ async function renderPlantDetail(view) {
     <dt>الزراعة</dt><dd>${pl.potted ? `أصيص ${esc(pl.potCm || 25)} سم` : 'بالأرض'}${pl.indoor ? ' — داخل البيت' : ''}${pl.mature ? ' — شجرة كبيرة' : ''}</dd>
     <dt>تاريخ الزراعة</dt><dd>${fmtDate(pl.plantedDate)}</dd>
     <dt>آخر سقي</dt><dd>${pl.lastWatered ? relDay(pl.lastWatered) : 'لم يسجل'}</dd>
-    <dt>آخر فحص</dt><dd>${pl.lastCheckup ? relDay(pl.lastCheckup) : 'لم يفحص'}</dd></dl>
+    <dt>آخر فحص</dt><dd>${pl.lastCheckup ? relDay(pl.lastCheckup) : 'لم يفحص'}</dd>
+    <dt>التذكير</dt><dd>${pl.notifyOff ? '🔕 متوقف' : `🔔 ${fmtHour(notifyHour(pl, t))}${pl.notifyHour == null || pl.notifyHour === '' ? ' (تلقائي)' : ''}`}</dd></dl>
     ${pl.notes ? `<p class="muted">${esc(pl.notes)}</p>` : ''}
     <div class="row" style="margin-top:10px"><button class="btn sec small" id="edit">✏️ تعديل</button><button class="btn small" style="background:var(--check)" id="chk">📷 فحص صحة</button><button class="btn water small" id="wnow">💧 سقيته الآن</button></div></div>`;
 
@@ -444,7 +428,7 @@ async function renderPlantDetail(view) {
     let h = chs.docs.map((d) => { const c = d.data(); const s = st[c.status] || ['⚪ فحص', 'ok'];
       return `<div style="margin-bottom:12px"><div class="row" style="align-items:flex-start">${c.photo ? `<img class="thumb" src="${c.photo}">` : ''}<div><b class="status-${s[1]}">${s[0]}</b> <span class="muted">${fmtDate(c.date)}</span><div>${esc(c.summary || c.notes || '')}</div>
         ${c.actions?.length ? `<ul class="clean">${c.actions.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>` : ''}</div></div></div>`; }).join('');
-    const names = { water: '💧 سقي', skip: '⏭ تخطي', feed: '🧪 تسميد' };
+    const names = { water: '💧 سقي', skip: '⏭ تخطي', feed: '🧪 تسميد', rain: '🌧 مطر (تأجيل تلقائي)' };
     h += logs.docs.length ? `<div class="sec-title">آخر العمليات</div>` + logs.docs.map((d) => { const l = d.data(); return `<div class="muted">${names[l.type] || l.type} — ${fmtDate(l.date)}${l.liters ? ` — ${l.liters} لتر` : ''}${l.name ? ` — ${esc(l.name)}` : ''}</div>`; }).join('') : '';
     el.innerHTML = h || '<span class="muted">لا يوجد سجل بعد.</span>';
   } catch (e) {
@@ -479,6 +463,10 @@ function renderPlantForm(view, opts) {
     <label class="check-row"><input type="checkbox" id="f-in" ${pl.indoor ?? p.env === 'in' ? 'checked' : ''}> داخل البيت</label>
     ${isTree ? `<label class="check-row"><input type="checkbox" id="f-mature" ${pl.mature ? 'checked' : ''}> شجرة كبيرة (عمرها أكثر من سنتين)</label>` : ''}
     ${!opts.plant ? `<label class="check-row"><input type="checkbox" id="f-wtoday"> سقيته اليوم</label>` : ''}
+    <label>🔔 وقت إشعار هذي النبتة</label>
+    <select id="f-hour"><option value="">تلقائي حسب نوعها (${fmtHour(notifyHour({ ...pl, notifyHour: null, speciesId: opts.speciesId || pl.speciesId, profile: p }, todayStr()))})</option>
+      ${Array.from({ length: 18 }, (_, i) => i + 5).map((h) => `<option value="${h}" ${String(pl.notifyHour) === String(h) ? 'selected' : ''}>${fmtHour(h)}</option>`).join('')}</select>
+    <label class="check-row"><input type="checkbox" id="f-noff" ${pl.notifyOff ? 'checked' : ''}> إيقاف إشعارات هذي النبتة</label>
     <details style="margin-top:14px"><summary><b>تعديل يدوي للجدول (اختياري)</b></summary>
       <p class="muted">إذا لاحظت التربة تبقى رطبة أو تجف بسرعة. اتركه فارغ حتى يتبع الجدول الموسمي.</p>
       <div class="row"><div><label>كل كم يوم</label><input id="o-every" type="number" inputmode="numeric" value="${esc(pl.override?.every || '')}"></div>
@@ -502,6 +490,7 @@ function renderPlantForm(view, opts) {
       potted: document.getElementById('f-pot').checked, potCm: num('f-potcm') || 25, indoor: document.getElementById('f-in').checked,
       mature: !!document.getElementById('f-mature')?.checked, notes: document.getElementById('f-notes').value.trim(),
       override: num('o-every') || num('o-amt') ? { every: num('o-every'), amount: num('o-amt') } : null, checkEvery: num('o-check'),
+      notifyHour: num('f-hour'), notifyOff: document.getElementById('f-noff').checked,
     };
     ev.target.disabled = true;
     try {
@@ -701,7 +690,7 @@ function renderSettings() {
   const s = S.settings;
   $app.innerHTML = `
   <div class="card"><h3>🔔 الإشعارات</h3><p class="muted" id="pstat">الحالة: ${('Notification' in window) ? ({ granted: 'مفعلة ✓', denied: 'مرفوضة — فعّلها من إعدادات المتصفح للموقع', default: 'غير مفعلة' })[Notification.permission] : 'غير مدعومة بهذا المتصفح'}</p>
-    <p class="muted">تجيك إشعارات: 5:30 الصبح (مهام اليوم) و 5:30 العصر (اللي ما خلصته).</p>
+    <p class="muted">كل نبتة يوصلها إشعار خاص بيها بوقتها: سقي أو سماد أو فحص بالصور، حسب جدولها. تقدر تغيّر وقت إشعار أي نبتة من صفحتها ← تعديل.</p>
     <div class="row"><button class="btn water" id="pon">تفعيل على هذا الجهاز</button><button class="btn ghost small" id="ptest">تجربة</button></div></div>
   <div class="card"><h3>🚿 صبيب الصوندة</h3><p class="muted">حتى أحولك اللترات إلى دقائق: املأ سطل معروف الحجم بالصوندة على نفس الفتحة اللي تسقي بيها، واحسب الثواني.</p>
     <div class="row"><div><label>حجم السطل (لتر)</label><input id="bk" type="number" inputmode="decimal" value="10"></div><div><label>الثواني</label><input id="sec" type="number" inputmode="decimal" placeholder="مثلاً 45"></div></div>
@@ -715,7 +704,6 @@ function renderSettings() {
   <div class="card"><h3>📍 أماكن الحديقة</h3><div id="zl">${(s.zones || []).map((z, i) => `<div class="row" style="margin-bottom:6px"><span>${esc(z)}</span><button class="btn ghost small" style="flex:0" data-zd="${i}">✕</button></div>`).join('') || '<span class="muted">لا يوجد</span>'}</div>
     <div class="row" style="margin-top:8px"><input id="zn" placeholder="مكان جديد"><button class="btn sec small" style="flex:0" id="za">إضافة</button></div></div>
   <div class="card"><h3>💾 نسخة احتياطية</h3><button class="btn sec" id="exp" style="width:100%">تنزيل نسخة (JSON)</button></div>
-  <div class="card"><h3>🔧 ربط Firebase</h3><p class="muted">المشروع: ${esc(CFG.firebase?.projectId || '')}</p><button class="btn ghost" id="resetcfg" style="width:100%">إعادة إعداد الربط</button></div>
   <button class="btn ghost" id="out" style="width:100%;margin-bottom:20px">تسجيل خروج</button>`;
   const set = (d) => setDoc(ud('meta', 'settings'), d, { merge: true });
   document.getElementById('pon').onclick = enablePush;
@@ -729,7 +717,6 @@ function renderSettings() {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' })); a.download = `حديقتي-${todayStr()}.json`; a.click();
   };
   document.getElementById('out').onclick = () => signOut(auth);
-  document.getElementById('resetcfg').onclick = () => { if (confirm('إعادة إدخال بيانات Firebase؟')) { localStorage.removeItem('garden_cfg'); location.reload(); } };
 }
 
 // ─────────────── الإشعارات (FCM) ───────────────

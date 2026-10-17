@@ -2,7 +2,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
-const CACHE = 'garden-v2';
+const CACHE = 'garden-v3';
 const SHELL = ['./', 'index.html', 'engine.js', 'manifest.json', 'icon.png'];
 
 try {
