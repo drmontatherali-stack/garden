@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f7d3b">
+<title>مهندس حديقتي</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6f1; --card: #ffffff; --ink: #1d2a1f; --muted: #5f6e61; --line: #dfe5da;
+  --green: #2f7d3b; --green-2: #e3f1e3; --water: #1f6fb2; --water-2: #e2eef9;
+  --feed: #9a6a00; --feed-2: #fbf0d6; --check: #7a3fa0; --check-2: #f1e6f8;
+  --danger: #b3261e; --danger-2: #fbe4e2; --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121713; --card: #1b221c; --ink: #e8efe7; --muted: #9fae9f; --line: #2c372d;
+    --green: #6cc479; --green-2: #1f3322; --water: #6fb3ee; --water-2: #172a3b;
+    --feed: #e3b54c; --feed-2: #362b12; --check: #c79be6; --check-2: #2d1f37; --danger: #ff8a80; --danger-2: #3a1c1a; }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 16px; line-height: 1.6; }
+body { padding-bottom: 84px; }
+header.top { position: sticky; top: 0; z-index: 5; background: var(--green); color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+header.top h1 { font-size: 19px; margin: 0; }
+header.top small { opacity: .85; display: block; font-size: 13px; }
+main { padding: 12px; max-width: 760px; margin: 0 auto; }
+nav.tabs { position: fixed; bottom: 0; inset-inline: 0; background: var(--card); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
+nav.tabs button { background: none; border: 0; padding: 8px 2px 10px; color: var(--muted); font: inherit; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+nav.tabs button span { font-size: 22px; line-height: 1; }
+nav.tabs button.on { color: var(--green); font-weight: 700; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.sec-title { font-size: 15px; color: var(--muted); margin: 18px 4px 8px; font-weight: 700; }
+.task { border-inline-start: 5px solid var(--water); }
+.task.feed { border-inline-start-color: var(--feed); }
+.task.check { border-inline-start-color: var(--check); }
+.task.done { opacity: .5; }
+.pill { display: inline-block; border-radius: 99px; padding: 1px 10px; font-size: 13px; background: var(--green-2); color: var(--green); margin: 2px 0 2px 4px; }
+.pill.water { background: var(--water-2); color: var(--water); }
+.pill.feed { background: var(--feed-2); color: var(--feed); }
+.pill.check { background: var(--check-2); color: var(--check); }
+.pill.danger { background: var(--danger-2); color: var(--danger); }
+.big { font-size: 22px; font-weight: 800; color: var(--water); }
+.muted { color: var(--muted); font-size: 14px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row > * { flex: 1; }
+.btn { border: 0; border-radius: 12px; padding: 12px 14px; font: inherit; font-weight: 700; background: var(--green); color: #fff; min-height: 46px; cursor: pointer; }
+.btn.sec { background: var(--green-2); color: var(--green); }
+.btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.btn.danger { background: var(--danger-2); color: var(--danger); }
+.btn.water { background: var(--water); }
+.btn:disabled { opacity: .5; }
+.btn.small { min-height: 36px; padding: 6px 10px; font-size: 14px; }
+label { display: block; font-weight: 700; margin: 12px 0 4px; font-size: 14px; }
+input, select, textarea { width: 100%; font: inherit; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+textarea { min-height: 80px; }
+.check-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-weight: 400; }
+.check-row input { width: auto; }
+.thumb { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--green-2); flex: 0 0 64px; display: grid; place-items: center; font-size: 30px; }
+.plant-row { display: flex; gap: 12px; align-items: center; cursor: pointer; }
+.plant-row > div { flex: 1; min-width: 0; }
+.kv { display: grid; grid-template-columns: 110px 1fr; gap: 4px 10px; font-size: 15px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; }
+.note { background: var(--feed-2); color: var(--ink); border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-top: 8px; }
+.note.blue { background: var(--water-2); }
+.note.red { background: var(--danger-2); }
+.photos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.photos img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; }
+.empty { text-align: center; padding: 30px 10px; color: var(--muted); }
+.empty div { font-size: 46px; }
+.toast { position: fixed; bottom: 96px; inset-inline: 16px; background: var(--ink); color: var(--bg); padding: 12px 16px; border-radius: 12px; z-index: 50; text-align: center; }
+.loading { text-align: center; padding: 24px; color: var(--muted); }
+.spinner { width: 34px; height: 34px; border: 4px solid var(--green-2); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.cand { display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
+.cand.sel { border-color: var(--green); background: var(--green-2); }
+.score { font-weight: 800; color: var(--green); min-width: 48px; text-align: center; }
+.back { background: none; border: 0; color: #fff; font: inherit; font-size: 15px; }
+.search { margin-bottom: 10px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+.chips button { white-space: nowrap; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 14px; }
+.chips button.on { background: var(--green); color: #fff; border-color: var(--green); }
+.days { display: flex; gap: 6px; overflow-x: auto; }
+.days div { min-width: 64px; text-align: center; background: var(--water-2); color: var(--water); border-radius: 10px; padding: 6px 4px; font-size: 13px; }
+.status-ok { color: var(--green); } .status-warn { color: var(--feed); } .status-bad { color: var(--danger); }
+ul.clean { margin: 6px 0; padding-inline-start: 20px; }
+.hidden { display: none !important; }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div><h1 id="title">🌿 مهندس حديقتي</h1><small id="subtitle"></small></div>
+  <button class="back hidden" id="back">رجوع ←</button>
+</header>
+<main id="app"><div class="loading"><div class="spinner"></div>تحميل...</div></main>
+<nav class="tabs hidden">
+  <button data-tab="today" class="on"><span>☀️</span>اليوم</button>
+  <button data-tab="plants"><span>🪴</span>نباتاتي</button>
+  <button data-tab="add"><span>➕</span>إضافة</button>
+  <button data-tab="library"><span>📚</span>المكتبة</button>
+  <button data-tab="settings"><span>⚙️</span>الإعدادات</button>
+</nav>
+<script type="module">
+import { PLANTS, PLANT_BY_ID, CATS, LIGHT, METHODS, LEAVES, SEASON_NAMES, seasonOf, matchScientific, todayStr, addDays, diffDays, monthOf, profileOf, waterPlan, tasksFor, forecast, plantLabel, feedDue } from './engine.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { initializeFirestore, persistentLocalCache, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, getDocs, getDoc, serverTimestamp, deleteField } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getMessaging, getToken, onMessage, isSupported } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js';
+
+
+let CFG = {};
+try { CFG = JSON.parse(localStorage.getItem('garden_cfg') || '{}'); } catch { CFG = {}; }
+const $app = document.getElementById('app');
+const $title = document.getElementById('title');
+const $sub = document.getElementById('subtitle');
+const $back = document.getElementById('back');
+const MONTHS = ['', 'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'];
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtDate = (s) => { if (!s) return '—'; const [y, m, d] = s.split('-'); return `${+d} ${MONTHS[+m]}${y !== todayStr().slice(0, 4) ? ' ' + y : ''}`; };
+const relDay = (s) => { const n = diffDays(todayStr(), s); return n === 0 ? 'اليوم' : n === 1 ? 'باجر' : n === -1 ? 'البارحة' : n < 0 ? `قبل ${-n} يوم` : `بعد ${n} يوم`; };
+function toast(msg, ms = 2600) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), ms); }
+function loading(msg) { return `<div class="loading"><div class="spinner"></div>${esc(msg)}</div>`; }
+
+// ─────────────── الحالة ───────────────
+const S = { user: null, plants: [], settings: { zones: [] }, todayLogs: [], tab: 'today', stack: [], unsub: [] };
+let app, auth, db;
+
+if (!CFG.firebase?.apiKey || !CFG.firebase?.projectId) { renderSetup(); throw new Error('setup'); }
+
+function parseFirebaseConfig(txt) {
+  const out = {};
+  for (const k of ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']) {
+    const m = txt.match(new RegExp(k + '\\s*[:=]\\s*["\'`]([^"\'`]+)["\'`]'));
+    if (m) out[k] = m[1].trim();
+  }
+  return out;
+}
+function renderSetup() {
+  document.querySelector('nav.tabs').classList.add('hidden');
+  setHead('🌿 مهندس حديقتي', 'الإعداد لأول مرة');
+  $app.innerHTML = `<div class="card"><h3>⚙️ ربط Firebase</h3>
+    <p class="muted">من Firebase Console ← Project settings ← Your apps، انسخ كود <b>firebaseConfig</b> كله والصقه هنا.</p>
+    <textarea id="cfg" dir="ltr" style="min-height:160px" placeholder="const firebaseConfig = { apiKey: ... }"></textarea>
+    <label>مفتاح الإشعارات (VAPID key)</label>
+    <p class="muted">Project settings ← Cloud Messaging ← Web Push certificates ← Key pair</p>
+    <input id="vapid" dir="ltr" placeholder="B...">
+    <button class="btn" id="savecfg" style="width:100%;margin-top:14px">حفظ وتشغيل</button></div>`;
+  document.getElementById('savecfg').onclick = () => {
+    const fb = parseFirebaseConfig(document.getElementById('cfg').value);
+    if (!fb.apiKey || !fb.projectId || !fb.appId) return toast('الكود ناقص — انسخ firebaseConfig كامل');
+    const v = document.getElementById('vapid').value.trim();
+    localStorage.setItem('garden_cfg', JSON.stringify({ firebase: fb, vapidKey: v }));
+    location.reload();
+  };
+}
+
+app = initializeApp(CFG.firebase);
+auth = getAuth(app);
+db = initializeFirestore(app, { localCache: persistentLocalCache() });
+
+const uc = (...p) => collection(db, 'users', S.user.uid, ...p);
+const ud = (...p) => doc(db, 'users', S.user.uid, ...p);
+
+onAuthStateChanged(auth, (u) => {
+  S.unsub.forEach((f) => f()); S.unsub = [];
+  S.user = u;
+  if (!u) return renderLogin();
+  document.querySelector('nav.tabs').classList.remove('hidden');
+  setDoc(doc(db, 'users', u.uid), { email: u.email, lastSeen: serverTimestamp() }, { merge: true });
+  S.unsub.push(onSnapshot(uc('plants'), (snap) => { S.plants = snap.docs.map((d) => ({ id: d.id, ...d.data() })); rerender(); }));
+  S.unsub.push(onSnapshot(ud('meta', 'settings'), (d) => { S.settings = { zones: [], flowLpm: 0, model: DEFAULT_MODEL, ...(d.data() || {}) }; rerender(); }));
+  S.unsub.push(onSnapshot(query(uc('logs'), where('date', '==', todayStr())), (snap) => { S.todayLogs = snap.docs.map((d) => ({ id: d.id, ...d.data() })); rerender(); }));
+  go(S.tab);
+  setupForegroundMessages();
+});
+
+// ─────────────── التنقل ───────────────
+document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
+$back.addEventListener('click', () => back());
+window.addEventListener('popstate', () => { if (S.stack.length) { S.stack.pop(); rerender(true); } });
+
+function go(tab) { S.tab = tab; S.stack = []; document.querySelectorAll('nav.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab)); rerender(true); window.scrollTo(0, 0); }
+function push(view) { S.stack.push(view); history.pushState({}, ''); rerender(true); window.scrollTo(0, 0); }
+function back() { history.back(); }
+
+let renderPending = false;
+function rerender(force) {
+  if (!S.user) return;
+  const top = S.stack[S.stack.length - 1];
+  // لا نعيد الرسم التلقائي أثناء الكتابة أو العمليات الطويلة أو بصفحة الإضافة
+  if (!force) {
+    const ae = document.activeElement;
+    if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
+    if (top ? (top.form || top.busy) : S.tab === 'add') return;
+  }
+  if (renderPending && !force) return;
+  renderPending = true;
+  requestAnimationFrame(() => {
+    renderPending = false;
+    $back.classList.toggle('hidden', !top);
+    if (top) return top.render();
+    ({ today: renderToday, plants: renderPlants, add: renderAdd, library: renderLibrary, settings: renderSettings })[S.tab]();
+  });
+}
+function setHead(t, sub = '') { $title.textContent = t; $sub.textContent = sub; }
+
+// ─────────────── تسجيل الدخول ───────────────
+function renderLogin() {
+  document.querySelector('nav.tabs').classList.add('hidden');
+  $back.classList.add('hidden');
+  setHead('🌿 مهندس حديقتي', 'سجّل دخولك');
+  $app.innerHTML = `<div class="card">
+    <h3>تسجيل الدخول</h3>
+    <label>البريد الإلكتروني</label><input id="em" type="email" autocomplete="email" dir="ltr">
+    <label>كلمة المرور</label><input id="pw" type="password" autocomplete="current-password" dir="ltr">
+    <div class="row" style="margin-top:14px"><button class="btn" id="in">دخول</button><button class="btn sec" id="up">حساب جديد</button></div>
+    <p class="muted" style="margin-top:10px"><a href="#" id="reset">نسيت كلمة المرور؟</a></p>
+    <p class="muted">أول مرة: اكتب بريدك وكلمة مرور (6 أحرف أو أكثر) واضغط "حساب جديد". بعدها تدخل بنفس البيانات من أي جهاز.</p></div>`;
+  const em = () => document.getElementById('em').value.trim(); const pw = () => document.getElementById('pw').value;
+  const err = (e) => toast(({ 'auth/invalid-credential': 'البريد أو كلمة المرور خطأ', 'auth/email-already-in-use': 'الحساب موجود — اضغط دخول', 'auth/weak-password': 'كلمة المرور قصيرة (6 أحرف على الأقل)', 'auth/invalid-email': 'البريد غير صحيح' })[e.code] || e.message);
+  document.getElementById('in').onclick = () => signInWithEmailAndPassword(auth, em(), pw()).catch(err);
+  document.getElementById('up').onclick = () => createUserWithEmailAndPassword(auth, em(), pw()).catch(err);
+  document.getElementById('reset').onclick = (e) => { e.preventDefault(); if (!em()) return toast('اكتب بريدك أولاً'); sendPasswordResetEmail(auth, em()).then(() => toast('أرسلنا رابط إعادة التعيين لبريدك')).catch(err); };
+}
+
+// ─────────────── اليوم ───────────────
+function renderToday() {
+  const t = todayStr(); const season = seasonOf(monthOf(t));
+  setHead('🌿 مهام اليوم', `${fmtDate(t)} — موسم ${SEASON_NAMES[season]}`);
+  const active = S.plants.filter((p) => !p.archived);
+  if (!active.length) {
+    $app.innerHTML = `<div class="empty"><div>🌱</div><p>حديقتك فارغة لحد الآن.</p><button class="btn" id="addfirst">➕ أضف أول نبات</button></div>${pushHint()}`;
+    document.getElementById('addfirst').onclick = () => go('add');
+    bindPushHint();
+    return;
+  }
+  const tasks = tasksFor(active, t, S.settings);
+  const water = tasks.filter((x) => x.type === 'water'); const feed = tasks.filter((x) => x.type === 'feed'); const check = tasks.filter((x) => x.type === 'check');
+  const totalL = water.filter((x) => x.plan.unit !== 'pot').reduce((a, x) => a + (x.plan.total || 0), 0);
+  const totalMin = S.settings.flowLpm ? Math.round(totalL / S.settings.flowLpm) : null;
+  const doneW = S.todayLogs.filter((l) => l.type === 'water' || l.type === 'skip').length;
+  const doneF = S.todayLogs.filter((l) => l.type === 'feed').length;
+
+  let html = pushHint();
+  html += `<div class="card"><div class="row"><div><div class="muted">سقي اليوم</div><div class="big">${water.length}</div></div>
+    <div><div class="muted">ماء الصوندة</div><div class="big">${Math.round(totalL)} لتر</div></div>
+    <div><div class="muted">الوقت التقريبي</div><div class="big">${totalMin != null ? totalMin + ' د' : '<a href="#" id="calib" style="font-size:14px">احسبه</a>'}</div></div></div>
+    ${doneW || doneF ? `<p class="muted" style="margin:6px 0 0">✓ أنجزت اليوم: ${doneW} سقي${doneF ? `، ${doneF} تسميد` : ''}</p>` : ''}</div>`;
+
+  if (!tasks.length) html += `<div class="empty"><div>✅</div><p>ماكو شي مطلوب اليوم. حديقتك مرتاحة.</p></div>`;
+  if (water.length) html += `<div class="sec-title">💧 السقي</div>` + water.map(waterCard).join('');
+  if (feed.length) html += `<div class="sec-title">🧪 التسميد</div>` + feed.map(feedCard).join('');
+  if (check.length) html += `<div class="sec-title">📷 فحص بالصور</div>` + check.map(checkCard).join('');
+
+  // القادم
+  const next = []; for (let i = 1; i <= 3; i++) { const d = addDays(t, i); const n = tasksFor(active.map((p) => simulateDone(p, tasks, t)), d, S.settings).filter((x) => x.type === 'water').length; next.push(`<div>${relDay(d)}<br><b>${n}</b> سقي</div>`); }
+  html += `<div class="sec-title">📅 الأيام الجاية</div><div class="card"><div class="days">${next.join('')}</div></div>`;
+  $app.innerHTML = html;
+  bindPushHint();
+  const c = document.getElementById('calib'); if (c) c.onclick = (e) => { e.preventDefault(); go('settings'); };
+  $app.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => taskAction(b.dataset.act, b.dataset.id, b.dataset.idx)));
+  $app.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => openPlant(b.dataset.open)));
+}
+function simulateDone(p, tasks, t) { return tasks.some((x) => x.type === 'water' && x.plant.id === p.id) ? { ...p, lastWatered: t, snoozeUntil: null } : p; }
+
+function waterCard(x) {
+  const p = x.plan; const pl = x.plant;
+  const amount = p.unit === 'pot'
+    ? `<div class="big" style="font-size:18px">${esc(p.amountText)}${p.count > 1 ? ` — ${p.count} أصص` : ''}</div>`
+    : `<div class="big">${p.total} لتر${p.minutes ? ` <span class="muted" style="font-weight:400">≈ ${p.minutes} دقيقة صوندة</span>` : ''}</div>
+       <div class="muted">${esc(p.amountText)}${p.count > 1 ? ` × ${p.count}${p.unit === 'Lm2' ? ' م²' : ''}` : ''}</div>`;
+  return `<div class="card task">
+    <div class="plant-row" data-open="${pl.id}">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3><div class="muted">${esc(pl.zone || 'بدون مكان')}${pl.spot ? ' — ' + esc(pl.spot) : ''}</div>
+      ${x.overdue ? `<span class="pill danger">متأخر ${x.overdue} يوم</span>` : ''}${p.establishing ? '<span class="pill">فترة تثبيت</span>' : ''}${p.inside ? '<span class="pill">داخلي</span>' : ''}</div></div>
+    <div style="margin-top:8px">${amount}</div>
+    ${p.checkFirst ? `<div class="note blue">👆 افحص أولاً: ${esc(p.test)} — إذا التربة بعدها رطبة اضغط "مو محتاج".</div>` : ''}
+    <p style="margin:8px 0 4px"><b>الطريقة:</b> ${esc(p.method)}</p>
+    ${p.leaves ? `<p style="margin:4px 0"><b>الأوراق:</b> ${esc(p.leaves.t)}</p>` : ''}
+    <p style="margin:4px 0"><b>الوقت:</b> ${esc(p.slot)}</p>
+    ${p.warn ? `<div class="note">⚠️ ${esc(p.warn)}</div>` : ''}
+    <div class="row" style="margin-top:10px">
+      <button class="btn water" data-act="water" data-id="${pl.id}">✓ سقيته</button>
+      <button class="btn ghost small" data-act="snooze" data-id="${pl.id}">⏭ باجر</button>
+      <button class="btn ghost small" data-act="skip" data-id="${pl.id}">${p.checkFirst ? 'مو محتاج' : '🌧 مطر/تخطي'}</button>
+    </div></div>`;
+}
+function feedCard(x) {
+  const f = x.feed; const pl = x.plant;
+  return `<div class="card task feed"><div class="plant-row" data-open="${pl.id}">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3><div class="muted">${esc(pl.zone || '')}</div></div></div>
+    <p style="margin:8px 0 2px"><span class="pill feed">${esc(f.n)}</span> <span class="muted">${esc(f.f)}</span></p>
+    <p style="margin:4px 0"><b>الكمية والطريقة:</b> ${esc(f.how)}${Number(pl.count) > 1 ? ` (لكل نبتة — عندك ${pl.count})` : ''}</p>
+    <div class="note">اسقِ قبل التسميد إذا التربة جافة — السماد على تربة جافة يحرق الجذور.</div>
+    <div class="row" style="margin-top:10px"><button class="btn" style="background:var(--feed)" data-act="feed" data-id="${pl.id}" data-idx="${f.idx}">✓ سمّدته</button>
+    <button class="btn ghost small" data-act="feedlater" data-id="${pl.id}" data-idx="${f.idx}">⏭ بعد أسبوع</button></div></div>`;
+}
+function checkCard(x) {
+  const pl = x.plant;
+  return `<div class="card task check"><div class="plant-row" data-open="${pl.id}">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3><div class="muted">${esc(pl.zone || '')}</div></div></div>
+    <p style="margin:8px 0">صوّر النبات (صورة كاملة + صورة قريبة للأوراق) حتى أفحص صحته.</p>
+    <div class="row"><button class="btn" style="background:var(--check)" data-act="check" data-id="${pl.id}">📷 فحص الآن</button></div></div>`;
+}
+function thumb(pl) { const p = profileOf(pl); return pl.thumb ? `<img class="thumb" src="${pl.thumb}" alt="">` : `<div class="thumb">${catIcon(p?.cat)}</div>`; }
+function catIcon(c) { return { lawn: '🌱', tree: '🌳', fruit: '🍊', palm: '🌴', shrub: '🌿', flower: '🌹', seasonal: '🌼', climber: '🍃', herb: '🌿', succulent: '🌵', indoor: '🪴' }[c] || '🌿'; }
+
+async function taskAction(act, id, idx) {
+  const pl = S.plants.find((p) => p.id === id); if (!pl) return;
+  const t = todayStr(); const ref = ud('plants', id);
+  try {
+    if (act === 'water' || act === 'skip') {
+      const plan = waterPlan(pl, t, S.settings);
+      await updateDoc(ref, { lastWatered: t, snoozeUntil: deleteField() });
+      await addDoc(uc('logs'), { plantId: id, type: act, date: t, liters: act === 'water' ? plan?.total ?? null : 0, at: serverTimestamp() });
+      toast(act === 'water' ? '💧 تم تسجيل السقي' : 'تم التخطي — الجدول يحسب من اليوم');
+    } else if (act === 'snooze') {
+      await updateDoc(ref, { snoozeUntil: addDays(t, 1) }); toast('أجلته لباجر');
+    } else if (act === 'feed') {
+      await updateDoc(ref, { [`lastFed.${idx}`]: t });
+      await addDoc(uc('logs'), { plantId: id, type: 'feed', idx: Number(idx), name: profileOf(pl).feed[idx]?.n || '', date: t, at: serverTimestamp() }); toast('🧪 تم تسجيل التسميد');
+    } else if (act === 'feedlater') {
+      const f = profileOf(pl).feed[idx]; await updateDoc(ref, { [`lastFed.${idx}`]: addDays(t, 7 - (f?.d || 30)) }); toast('بعد أسبوع');
+    } else if (act === 'check') {
+      openCheckup(id);
+    }
+  } catch (e) { toast('خطأ: ' + e.message); }
+}
+
+// ─────────────── تنبيه تفعيل الإشعارات ───────────────
+function pushHint() {
+  if (!('Notification' in window) || Notification.permission === 'granted' || S.settings.pushDismissed) return '';
+  return `<div class="card" style="border-color:var(--water)"><b>🔔 فعّل الإشعارات</b><p class="muted" style="margin:4px 0 8px">حتى يوصلك تنبيه حقيقي على الموبايل بمواعيد السقي والتسميد.</p>
+    <div class="row"><button class="btn water" id="ph-on">تفعيل</button><button class="btn ghost small" id="ph-no">لاحقاً</button></div></div>`;
+}
+function bindPushHint() {
+  const on = document.getElementById('ph-on'); if (on) on.onclick = enablePush;
+  const no = document.getElementById('ph-no'); if (no) no.onclick = () => setDoc(ud('meta', 'settings'), { pushDismissed: true }, { merge: true });
+}
+
+// ─────────────── نباتاتي ───────────────
+function renderPlants() {
+  setHead('🪴 نباتاتي', `${S.plants.filter((p) => !p.archived).length} نوع مسجل`);
+  const active = S.plants.filter((p) => !p.archived);
+  if (!active.length) { $app.innerHTML = `<div class="empty"><div>🪴</div><p>ماكو نباتات بعد.</p><button class="btn" id="a">➕ إضافة</button></div>`; document.getElementById('a').onclick = () => go('add'); return; }
+  const zones = {};
+  active.forEach((p) => { (zones[p.zone || 'بدون مكان'] ||= []).push(p); });
+  const t = todayStr();
+  let html = '';
+  for (const [z, list] of Object.entries(zones).sort()) {
+    const units = list.reduce((a, p) => a + (profileOf(p)?.w?.unit === 'Lm2' && !p.potted ? 0 : Number(p.count) || 1), 0);
+    const area = list.reduce((a, p) => a + (profileOf(p)?.w?.unit === 'Lm2' && !p.potted ? Number(p.count) || 0 : 0), 0);
+    html += `<div class="sec-title">📍 ${esc(z)} <span class="muted">(${[units ? units + ' نبتة' : '', area ? area + ' م² ثيل' : ''].filter(Boolean).join(' + ')})</span></div>`;
+    html += list.map((pl) => {
+      const plan = waterPlan(pl, t, S.settings);
+      const next = pl.lastWatered && plan && !plan.inactive ? addDays(pl.lastWatered, plan.every) : t;
+      return `<div class="card plant-row" data-open="${pl.id}">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3>
+        <div class="muted">${esc(profileOf(pl)?.ar || '')}${profileOf(pl)?.ai ? ' <span class="pill check">ذكاء اصطناعي</span>' : ''}</div>
+        <div class="muted">💧 ${plan?.inactive ? 'خارج موسمه' : `كل ${plan?.every} يوم — القادم: ${next <= t ? '<b>اليوم</b>' : relDay(next)}`}</div></div></div>`;
+    }).join('');
+  }
+  const arch = S.plants.filter((p) => p.archived);
+  if (arch.length) html += `<div class="sec-title">🗄 المؤرشفة</div>` + arch.map((pl) => `<div class="card plant-row" data-open="${pl.id}" style="opacity:.6">${thumb(pl)}<div><h3>${esc(plantLabel(pl))}</h3></div></div>`).join('');
+  $app.innerHTML = html;
+  $app.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => openPlant(b.dataset.open)));
+}
+
+// ─────────────── تفاصيل نبات ───────────────
+function openPlant(id) {
+  const view = { id, render: () => renderPlantDetail(view) };
+  push(view);
+}
+async function renderPlantDetail(view) {
+  const pl = S.plants.find((p) => p.id === view.id);
+  if (!pl) { $app.innerHTML = '<div class="empty">النبات محذوف.</div>'; return; }
+  const p = profileOf(pl); const t = todayStr();
+  setHead(plantLabel(pl), pl.zone || '');
+  const plan = waterPlan(pl, t, S.settings);
+  const fc = forecast(pl, t, 21, S.settings);
+  let html = `<div class="card plant-row">${thumb(pl)}<div><h3>${esc(p.ar)}</h3><div class="muted" dir="ltr" style="text-align:right"><i>${esc(p.sci)}</i></div>
+    <span class="pill">${esc(CATS[p.cat] || '')}</span>${p.ai ? '<span class="pill check">ملف بالذكاء الاصطناعي — راجعه</span>' : '<span class="pill">ملف مضبوط</span>'}</div></div>`;
+
+  html += `<div class="card"><h3>📍 بالدار</h3><dl class="kv">
+    <dt>المكان</dt><dd>${esc(pl.zone || '—')}${pl.spot ? ' — ' + esc(pl.spot) : ''}</dd>
+    <dt>${p.w.unit === 'Lm2' && !pl.potted ? 'المساحة' : 'العدد'}</dt><dd>${esc(pl.count || 1)} ${p.w.unit === 'Lm2' && !pl.potted ? 'م²' : ''}</dd>
+    <dt>الزراعة</dt><dd>${pl.potted ? `أصيص ${esc(pl.potCm || 25)} سم` : 'بالأرض'}${pl.indoor ? ' — داخل البيت' : ''}${pl.mature ? ' — شجرة كبيرة' : ''}</dd>
+    <dt>تاريخ الزراعة</dt><dd>${fmtDate(pl.plantedDate)}</dd>
+    <dt>آخر سقي</dt><dd>${pl.lastWatered ? relDay(pl.lastWatered) : 'لم يسجل'}</dd>
+    <dt>آخر فحص</dt><dd>${pl.lastCheckup ? relDay(pl.lastCheckup) : 'لم يفحص'}</dd></dl>
+    ${pl.notes ? `<p class="muted">${esc(pl.notes)}</p>` : ''}
+    <div class="row" style="margin-top:10px"><button class="btn sec small" id="edit">✏️ تعديل</button><button class="btn small" style="background:var(--check)" id="chk">📷 فحص صحة</button><button class="btn water small" id="wnow">💧 سقيته الآن</button></div></div>`;
+
+  if (plan && !plan.inactive) {
+    html += `<div class="card"><h3>💧 السقي — ${esc(plan.seasonName)}</h3>
+      <div class="big">${plan.unit === 'pot' ? 'حتى يخرج الماء من الأسفل' : `${plan.total} لتر كل ${plan.every} يوم`}</div>
+      ${plan.unit === 'pot' ? `<div class="muted">افحص كل ${plan.every} يوم — ${esc(plan.amountText)}</div>` : `<div class="muted">${esc(plan.amountText)}${plan.minutes ? ` — ≈ ${plan.minutes} دقيقة صوندة` : ''}</div>`}
+      ${plan.notes.length ? `<p class="muted">${plan.notes.map(esc).join(' • ')}</p>` : ''}
+      <p><b>الطريقة:</b> ${esc(plan.method)}</p>
+      ${plan.leaves ? `<p><b>${esc(plan.leaves.t)}:</b> ${esc(plan.leaves.d)}</p>` : ''}
+      <p><b>الوقت:</b> ${esc(plan.slot)}</p>
+      <p><b>متى يحتاج سقي؟</b> ${esc(plan.test)}</p>
+      ${plan.warn ? `<div class="note">⚠️ ${esc(plan.warn)}</div>` : ''}
+      <div class="sec-title" style="margin-top:12px">جدول الـ 3 أسابيع الجاية</div><div class="days">${fc.map((f) => `<div>${relDay(f.date)}<br><b>${f.unit === 'pot' ? 'فحص' : f.total + ' ل'}</b></div>`).join('') || '<span class="muted">لا يوجد</span>'}</div></div>`;
+  } else if (plan?.inactive) html += `<div class="card note">${esc(plan.note)}</div>`;
+
+  html += `<div class="card"><h3>📆 السقي حسب المواسم</h3><dl class="kv">${['S', 'M', 'W'].map((s) => { const v = p.w[s]; return `<dt>${SEASON_NAMES[s]}</dt><dd>${!v ? 'خارج الموسم' : p.w.unit === 'pot' ? `فحص كل ${v[0]} يوم` : `كل ${v[0]} يوم — ${v[1]} ${p.w.unit === 'Lm2' ? 'لتر/م²' : 'لتر'}`}</dd>`; }).join('')}</dl>
+    ${p.w.mature ? `<p class="muted">الشجرة الكبيرة (بعد سنتين): الفترة ×${p.w.mature[0]} والكمية ×${p.w.mature[1]}</p>` : ''}</div>`;
+
+  if (p.feed?.length) html += `<div class="card"><h3>🧪 التسميد</h3>${p.feed.map((f, i) => `<div style="margin-bottom:10px"><span class="pill feed">${esc(f.n)}</span>
+      <div class="muted">${esc(f.f)} — الأشهر: ${f.mo.map((m) => MONTHS[m]).join('، ')} — كل ${f.d >= 300 ? 'سنة' : f.d + ' يوم'}</div><div>${esc(f.how)}</div>
+      <div class="muted">آخر مرة: ${pl.lastFed?.[i] ? fmtDate(pl.lastFed[i]) : '—'}</div></div>`).join('')}</div>`;
+
+  html += `<div class="card"><h3>🌞 الزراعة والعناية</h3><dl class="kv"><dt>الإضاءة</dt><dd>${esc(LIGHT[p.light] || p.light)}</dd><dt>المكان المثالي</dt><dd>${esc(p.place)}</dd>
+    <dt>التربة</dt><dd>${esc(p.soil)}</dd><dt>الحرارة</dt><dd>${esc(p.tol?.heat || '—')}</dd><dt>البرد</dt><dd>${esc(p.tol?.cold || '—')}</dd><dt>الملوحة</dt><dd>${esc(p.tol?.salt || '—')}</dd></dl>
+    ${p.care ? `<p><b>العناية:</b> ${esc(p.care)}</p>` : ''}${p.problems ? `<p><b>المشاكل الشائعة:</b> ${esc(p.problems)}</p>` : ''}</div>`;
+
+  html += `<div class="card"><h3>📋 الفحوصات والسجل</h3><div id="hist">${loading('تحميل...')}</div></div>
+    <div class="row" style="margin-bottom:20px"><button class="btn ghost" id="arch">${pl.archived ? '↩️ استرجاع' : '🗄 أرشفة (مات/انشال)'}</button><button class="btn danger" id="del">🗑 حذف</button></div>`;
+  $app.innerHTML = html;
+
+  document.getElementById('edit').onclick = () => openPlantForm({ plant: pl });
+  document.getElementById('chk').onclick = () => openCheckup(pl.id);
+  document.getElementById('wnow').onclick = () => taskAction('water', pl.id);
+  document.getElementById('arch').onclick = async () => { await updateDoc(ud('plants', pl.id), { archived: !pl.archived }); toast('تم'); };
+  document.getElementById('del').onclick = async () => { if (!confirm('حذف النبات وكل سجله نهائياً؟')) return; await deleteDoc(ud('plants', pl.id));
+    for (const c of ['photos', 'logs', 'checkups']) { const q = await getDocs(query(uc(c), where('plantId', '==', pl.id))); for (const d of q.docs) await deleteDoc(d.ref); }
+    back(); toast('تم الحذف'); };
+
+  // السجل
+  try {
+    const [chsQ, logsQ] = await Promise.all([
+      getDocs(query(uc('checkups'), where('plantId', '==', pl.id))),
+      getDocs(query(uc('logs'), where('plantId', '==', pl.id))),
+    ]);
+    const byDate = (a, b) => (b.data().date || '').localeCompare(a.data().date || '');
+    const chs = { docs: [...chsQ.docs].sort(byDate).slice(0, 5) }; const logs = { docs: [...logsQ.docs].sort(byDate).slice(0, 12) };
+    const el = document.getElementById('hist'); if (!el) return;
+    const st = { healthy: ['🟢 سليم', 'ok'], warning: ['🟡 يحتاج انتباه', 'warn'], sick: ['🔴 مريض', 'bad'] };
+    let h = chs.docs.map((d) => { const c = d.data(); const s = st[c.status] || ['⚪ فحص', 'ok'];
+      return `<div style="margin-bottom:12px"><div class="row" style="align-items:flex-start">${c.photo ? `<img class="thumb" src="${c.photo}">` : ''}<div><b class="status-${s[1]}">${s[0]}</b> <span class="muted">${fmtDate(c.date)}</span><div>${esc(c.summary || c.notes || '')}</div>
+        ${c.actions?.length ? `<ul class="clean">${c.actions.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>` : ''}</div></div></div>`; }).join('');
+    const names = { water: '💧 سقي', skip: '⏭ تخطي', feed: '🧪 تسميد' };
+    h += logs.docs.length ? `<div class="sec-title">آخر العمليات</div>` + logs.docs.map((d) => { const l = d.data(); return `<div class="muted">${names[l.type] || l.type} — ${fmtDate(l.date)}${l.liters ? ` — ${l.liters} لتر` : ''}${l.name ? ` — ${esc(l.name)}` : ''}</div>`; }).join('') : '';
+    el.innerHTML = h || '<span class="muted">لا يوجد سجل بعد.</span>';
+  } catch (e) {
+    const el = document.getElementById('hist');
+    if (el) el.innerHTML = /index/i.test(e.message) ? `<span class="muted">يحتاج Firestore فهرس — افتح الرابط من console مرة وحدة.</span>` : `<span class="muted">${esc(e.message)}</span>`;
+  }
+}
+
+// ─────────────── نموذج الإضافة/التعديل ───────────────
+// opts: { plant } للتعديل | { speciesId | profile, photos, ident } للإضافة
+function openPlantForm(opts) {
+  const view = { form: true, render: () => renderPlantForm(view, opts) };
+  push(view);
+}
+function renderPlantForm(view, opts) {
+  const pl = opts.plant || {};
+  const p = opts.plant ? profileOf(pl) : (opts.profile || PLANT_BY_ID[opts.speciesId]);
+  const isLawn = p.w.unit === 'Lm2'; const isTree = !!p.w.mature;
+  const zones = [...new Set([...(S.settings.zones || []), ...S.plants.map((x) => x.zone).filter(Boolean)])];
+  setHead(opts.plant ? 'تعديل النبات' : 'إضافة لحديقتي', p.ar);
+  $app.innerHTML = `<div class="card">
+    ${opts.ident ? `<div class="note blue">${esc(opts.ident)}</div>` : ''}
+    ${p.ai ? `<div class="note">🤖 الملف أنشأه الذكاء الاصطناعي. راجع الكميات بعد أول أسبوعين، وتقدر تعدلها يدوياً تحت.</div>` : ''}
+    <label>اسم مميز (اختياري)</label><input id="f-nick" value="${esc(pl.nickname || '')}" placeholder="مثلاً: جوري الباب الأمامي">
+    <label>المكان بالدار</label><select id="f-zone">${zones.map((z) => `<option ${z === pl.zone ? 'selected' : ''}>${esc(z)}</option>`).join('')}<option value="__new">➕ مكان جديد...</option></select>
+    <input id="f-znew" class="${zones.length ? 'hidden' : ''}" placeholder="مثلاً: الحديقة الأمامية - يمين الباب" style="margin-top:6px">
+    <label>تحديد أدق للموقع (اختياري)</label><input id="f-spot" value="${esc(pl.spot || '')}" placeholder="مثلاً: على طول السياج الشرقي">
+    <label>${isLawn ? 'المساحة (م²)' : 'العدد'}</label><input id="f-count" type="number" inputmode="decimal" min="1" value="${esc(pl.count || 1)}">
+    <label>تاريخ الزراعة</label><input id="f-date" type="date" value="${esc(pl.plantedDate || todayStr())}">
+    <label class="check-row"><input type="checkbox" id="f-pot" ${pl.potted || p.w.unit === 'pot' ? 'checked' : ''}> مزروع بأصيص</label>
+    <div id="potbox" class="${pl.potted || p.w.unit === 'pot' ? '' : 'hidden'}"><label>قطر الأصيص (سم)</label><input id="f-potcm" type="number" inputmode="numeric" value="${esc(pl.potCm || 25)}"></div>
+    <label class="check-row"><input type="checkbox" id="f-in" ${pl.indoor ?? p.env === 'in' ? 'checked' : ''}> داخل البيت</label>
+    ${isTree ? `<label class="check-row"><input type="checkbox" id="f-mature" ${pl.mature ? 'checked' : ''}> شجرة كبيرة (عمرها أكثر من سنتين)</label>` : ''}
+    ${!opts.plant ? `<label class="check-row"><input type="checkbox" id="f-wtoday"> سقيته اليوم</label>` : ''}
+    <details style="margin-top:14px"><summary><b>تعديل يدوي للجدول (اختياري)</b></summary>
+      <p class="muted">إذا لاحظت التربة تبقى رطبة أو تجف بسرعة. اتركه فارغ حتى يتبع الجدول الموسمي.</p>
+      <div class="row"><div><label>كل كم يوم</label><input id="o-every" type="number" inputmode="numeric" value="${esc(pl.override?.every || '')}"></div>
+      <div><label>${isLawn ? 'لتر/م²' : 'لتر للنبتة'}</label><input id="o-amt" type="number" inputmode="decimal" value="${esc(pl.override?.amount || '')}"></div></div>
+      <label>فحص بالصور كل (يوم)</label><input id="o-check" type="number" inputmode="numeric" value="${esc(pl.checkEvery || '')}" placeholder="${p.check || 21}">
+    </details>
+    <label>ملاحظات</label><textarea id="f-notes">${esc(pl.notes || '')}</textarea>
+    <div class="row" style="margin-top:14px"><button class="btn" id="save">💾 حفظ</button></div></div>`;
+
+  const zsel = document.getElementById('f-zone'); const znew = document.getElementById('f-znew');
+  if (!zones.length) zsel.value = '__new';
+  zsel.onchange = () => znew.classList.toggle('hidden', zsel.value !== '__new');
+  document.getElementById('f-pot').onchange = (e) => document.getElementById('potbox').classList.toggle('hidden', !e.target.checked);
+  document.getElementById('save').onclick = async (ev) => {
+    const zone = zsel.value === '__new' ? znew.value.trim() : zsel.value;
+    if (!zone) return toast('اكتب مكان النبات بالدار');
+    const num = (id) => { const v = document.getElementById(id)?.value; return v === '' || v == null ? null : Number(v); };
+    const data = {
+      nickname: document.getElementById('f-nick').value.trim(), zone, spot: document.getElementById('f-spot').value.trim(),
+      count: Math.max(1, num('f-count') || 1), plantedDate: document.getElementById('f-date').value || todayStr(),
+      potted: document.getElementById('f-pot').checked, potCm: num('f-potcm') || 25, indoor: document.getElementById('f-in').checked,
+      mature: !!document.getElementById('f-mature')?.checked, notes: document.getElementById('f-notes').value.trim(),
+      override: num('o-every') || num('o-amt') ? { every: num('o-every'), amount: num('o-amt') } : null, checkEvery: num('o-check'),
+    };
+    ev.target.disabled = true;
+    try {
+      if (!S.settings.zones?.includes(zone)) await setDoc(ud('meta', 'settings'), { zones: [...(S.settings.zones || []), zone] }, { merge: true });
+      if (opts.plant) { await updateDoc(ud('plants', pl.id), data); toast('تم الحفظ'); back(); return; }
+      if (document.getElementById('f-wtoday').checked) data.lastWatered = todayStr();
+      data.createdDate = todayStr(); data.createdAt = serverTimestamp();
+      if (opts.speciesId) data.speciesId = opts.speciesId; else data.profile = p;
+      if (opts.photos?.length) data.thumb = (await shrinkImage(opts.photos[0].blob, 160, 0.7)).dataUrl;
+      const ref = await addDoc(uc('plants'), data);
+      for (const ph of (opts.photos || []).slice(0, 3)) { const s = await shrinkImage(ph.blob, 600, 0.7); await addDoc(uc('photos'), { plantId: ref.id, date: todayStr(), kind: 'add', data: s.dataUrl }); }
+      toast('🌱 انضاف لحديقتك'); go('plants');
+    } catch (e) { ev.target.disabled = false; toast('خطأ: ' + e.message); }
+  };
+}
+
+// ─────────────── إضافة نبات ───────────────
+function renderAdd() {
+  setHead('➕ إضافة نبات', 'صوّر النبات أو اختاره');
+  const s = S.settings;
+  $app.innerHTML = `<div class="card"><h3>📷 تصوير والتعرف على النبات</h3>
+      <p class="muted">صوّر 1-4 صور: النبتة كاملة + ورقة قريبة + الزهرة أو الثمرة إن وجدت. الصورة الواضحة بضوء النهار تعطي دقة أعلى.</p>
+      ${!s.plantnetKey && !s.geminiKey ? `<div class="note red">ضع مفتاح PlantNet أو Gemini بالإعدادات حتى يشتغل التعرف.</div>` : ''}
+      <div class="row"><label class="btn sec" style="text-align:center;margin:0">📸 الكاميرا<input id="cam" type="file" accept="image/*" capture="environment" class="hidden"></label>
+      <label class="btn sec" style="text-align:center;margin:0">🖼 من المعرض<input id="gal" type="file" accept="image/*" multiple class="hidden"></label></div>
+      <div class="photos" id="prev"></div>
+      <button class="btn" id="ident" style="width:100%;margin-top:10px" disabled>🔍 تعرّف على النبات</button>
+      <div id="result"></div></div>
+    <div class="card"><h3>✍️ أعرف اسمه</h3><input id="byname" placeholder="مثلاً: جوري، ليمون، ونكا، مونستيرا..."><div id="nameres"></div></div>
+    <div class="card"><h3>📚 من المكتبة</h3><p class="muted">${PLANTS.length} نبات شائع بالمشاتل العراقية بملفات مضبوطة على مناخ النجف.</p><button class="btn sec" id="lib" style="width:100%">تصفح المكتبة</button></div>`;
+
+  const photos = [];
+  const addFiles = async (files) => {
+    for (const f of [...files].slice(0, 4 - photos.length)) photos.push(await shrinkImage(f, 1280, 0.85));
+    document.getElementById('prev').innerHTML = photos.map((p) => `<img src="${p.dataUrl}">`).join('');
+    document.getElementById('ident').disabled = !photos.length;
+  };
+  document.getElementById('cam').onchange = (e) => addFiles(e.target.files);
+  document.getElementById('gal').onchange = (e) => addFiles(e.target.files);
+  document.getElementById('ident').onclick = () => identify(photos);
+  document.getElementById('lib').onclick = () => go('library');
+  const bn = document.getElementById('byname');
+  bn.oninput = () => {
+    const q = bn.value.trim(); const res = document.getElementById('nameres');
+    if (q.length < 2) { res.innerHTML = ''; return; }
+    const hits = searchPlants(q).slice(0, 6);
+    res.innerHTML = hits.map((p) => `<div class="cand" data-sp="${p.id}"><div class="thumb">${catIcon(p.cat)}</div><div><b>${esc(p.ar)}</b><div class="muted">${esc(p.sci)}</div></div><span class="pill">مضبوط ✓</span></div>`).join('')
+      + (s.geminiKey ? `<button class="btn ghost" id="ainame" style="width:100%">🤖 مو موجود؟ أنشئ ملف "${esc(q)}" بالذكاء الاصطناعي</button>` : '');
+    res.querySelectorAll('[data-sp]').forEach((c) => c.onclick = () => openProfile(PLANT_BY_ID[c.dataset.sp]));
+    const an = document.getElementById('ainame'); if (an) an.onclick = async () => {
+      res.innerHTML = loading('المهندس الزراعي يجهز الملف...');
+      try { const r = await aiProfileByName({ key: s.geminiKey, model: s.model, name: q }); showAiResult(r, [], res); } catch (e) { res.innerHTML = `<div class="note red">${esc(e.message)}</div>`; }
+    };
+  };
+}
+
+function searchPlants(q) {
+  const n = norm(q);
+  return PLANTS.filter((p) => [p.ar, p.sci, ...(p.alt || [])].some((x) => norm(x).includes(n)));
+}
+function norm(s) { return String(s || '').toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/[ًٌٍَُِّْ]/g, ''); }
+
+async function identify(photos) {
+  const s = S.settings; const res = document.getElementById('result');
+    res.innerHTML = loading('جاري التعرف على النبات...');
+  try {
+    let cands = [];
+    if (s.plantnetKey) {
+      try { cands = await plantnetIdentify(photos, s.plantnetKey); } catch (e) { if (!s.geminiKey) throw e; toast('PlantNet: ' + e.message); }
+    }
+    if (!cands.length && s.geminiKey) {
+      res.innerHTML = loading('المهندس الزراعي يفحص الصور...');
+      const r = await aiProfile({ key: s.geminiKey, model: s.model, images: photos });
+      return showAiResult(r, photos, res);
+    }
+    if (!cands.length) { res.innerHTML = `<div class="note red">ما تعرّف على النبات. جرب صورة أوضح للورقة أو الزهرة.</div>`; return; }
+    res.innerHTML = `<div class="sec-title">النتائج (اختر الصحيح)</div>` + cands.map((c, i) => `<div class="cand" data-i="${i}"><div class="score">${c.score}%</div>
+      <div style="flex:1"><b>${esc(c.match ? c.match.ar : c.sci)}</b><div class="muted" dir="ltr" style="text-align:right"><i>${esc(c.sci)}</i>${c.common ? ' — ' + esc(c.common) : ''}</div></div>
+      ${c.match ? '<span class="pill">مضبوط ✓</span>' : '<span class="pill check">🤖</span>'}</div>`).join('')
+      + (cands[0].score < 40 ? `<div class="note">⚠️ نسبة التأكد واطئة — صوّر ورقة قريبة أو زهرة وأعد المحاولة.</div>` : '')
+      + (s.geminiKey ? `<button class="btn ghost" id="ai2" style="width:100%;margin-top:6px">🤖 رأي ثاني من المهندس الزراعي</button>` : '');
+    res.querySelectorAll('[data-i]').forEach((el) => el.onclick = async () => {
+      const c = cands[+el.dataset.i];
+      const ident = `التعرف: ${c.sci} — نسبة التأكد ${c.score}%`;
+      if (c.match) return openPlantForm({ speciesId: c.match.id, photos, ident });
+      if (!s.geminiKey) return toast('هذا النبات مو بالمكتبة — ضع مفتاح Gemini حتى ينشأ ملفه');
+      res.innerHTML = loading('المهندس الزراعي يجهز ملف الرعاية...');
+      try { showAiResult(await aiProfile({ key: s.geminiKey, model: s.model, images: photos, hint: `${c.sci} (${c.score}%)` }), photos, res); } catch (e) { res.innerHTML = `<div class="note red">${esc(e.message)}</div>`; }
+    });
+    const a2 = document.getElementById('ai2'); if (a2) a2.onclick = async () => {
+      res.innerHTML = loading('المهندس الزراعي يفحص الصور...');
+      try { showAiResult(await aiProfile({ key: s.geminiKey, model: s.model, images: photos, hint: cands.slice(0, 3).map((c) => `${c.sci} ${c.score}%`).join('، ') }), photos, res); } catch (e) { res.innerHTML = `<div class="note red">${esc(e.message)}</div>`; }
+    };
+  } catch (e) { res.innerHTML = `<div class="note red">${esc(e.message)}</div>`; }
+}
+
+function showAiResult(r, photos, el) {
+  const id = r.identified || {}; const p = r.profile;
+  const dbMatch = PLANTS.find((x) => x.sci.toLowerCase() === (p.sci || '').toLowerCase()) || null;
+  el.innerHTML = `<div class="card" style="margin-top:10px"><div class="row"><div class="score" style="flex:0">${esc(id.confidence ?? '?')}%</div><div><b>${esc(id.ar || p.ar)}</b><div class="muted" dir="ltr" style="text-align:right"><i>${esc(id.sci || p.sci)}</i></div></div></div>
+    ${id.reason ? `<p class="muted">${esc(id.reason)}</p>` : ''}
+    ${(id.confidence ?? 100) < 60 ? `<div class="note">⚠️ التأكد واطئ. ${r.alternatives?.length ? 'احتمالات أخرى: ' + r.alternatives.map((a) => `${esc(a.ar)} (${esc(a.confidence)}%)`).join('، ') : ''} — الأفضل تسأل المشتل عن الاسم.</div>` : ''}
+    ${dbMatch ? `<div class="note blue">هذا النبات موجود بالمكتبة بملف مضبوط — راح نستعمل الملف المضبوط.</div>` : ''}
+    <div class="row" style="margin-top:10px"><button class="btn" id="useai">✓ صحيح، أضفه</button><button class="btn ghost small" id="viewai">عرض الملف</button></div></div>`;
+  const ident = `التعرف: ${id.ar || p.ar} (${id.sci || p.sci}) — نسبة التأكد ${id.confidence ?? '?'}%`;
+  document.getElementById('useai').onclick = () => dbMatch ? openPlantForm({ speciesId: dbMatch.id, photos, ident }) : openPlantForm({ profile: p, photos, ident });
+  document.getElementById('viewai').onclick = () => openProfile(dbMatch || p, photos);
+}
+
+// ─────────────── المكتبة ───────────────
+let libCat = ''; let libQ = '';
+function renderLibrary() {
+  setHead('📚 المكتبة', `${PLANTS.length} نبات من المشاتل العراقية`);
+  $app.innerHTML = `<input class="search" id="q" placeholder="ابحث بالاسم..." value="${esc(libQ)}">
+    <div class="chips"><button data-c="" class="${!libCat ? 'on' : ''}">الكل</button>${Object.entries(CATS).map(([k, v]) => `<button data-c="${k}" class="${libCat === k ? 'on' : ''}">${catIcon(k)} ${v}</button>`).join('')}</div><div id="list"></div>`;
+  const draw = () => {
+    const list = (libQ ? searchPlants(libQ) : PLANTS).filter((p) => !libCat || p.cat === libCat);
+    document.getElementById('list').innerHTML = list.map((p) => `<div class="card plant-row" data-sp="${p.id}"><div class="thumb">${catIcon(p.cat)}</div><div><h3>${esc(p.ar)}</h3><div class="muted"><i>${esc(p.sci)}</i></div>
+      <div class="muted">${esc(LIGHT[p.light] || '')}</div></div></div>`).join('') || '<div class="empty">لا نتائج</div>';
+    document.querySelectorAll('[data-sp]').forEach((c) => c.onclick = () => openProfile(PLANT_BY_ID[c.dataset.sp]));
+  };
+  document.getElementById('q').oninput = (e) => { libQ = e.target.value; draw(); };
+  document.querySelectorAll('[data-c]').forEach((b) => b.onclick = () => { libCat = b.dataset.c; renderLibrary(); });
+  draw();
+}
+function openProfile(p, photos) { push({ render: () => renderProfile(p, photos) }); }
+function renderProfile(p, photos) {
+  setHead(p.ar, CATS[p.cat] || '');
+  const ex = { early: 'الصبح الباكر', morning: 'الصبح', midmorning: 'الضحى' };
+  $app.innerHTML = `<div class="card"><h3>${catIcon(p.cat)} ${esc(p.ar)}</h3><div class="muted" dir="ltr" style="text-align:right"><i>${esc(p.sci)}</i></div>
+    ${p.alt?.length ? `<p class="muted">يسمى أيضاً: ${p.alt.map(esc).join('، ')}</p>` : ''}${p.ai ? '<span class="pill check">ملف بالذكاء الاصطناعي</span>' : '<span class="pill">ملف مضبوط على مناخ النجف</span>'}</div>
+    <div class="card"><h3>🌞 أين يُزرع</h3><p><b>الإضاءة:</b> ${esc(LIGHT[p.light] || p.light)}</p><p>${esc(p.place)}</p><p><b>التربة:</b> ${esc(p.soil)}</p>
+      <p class="muted">حرارة: ${esc(p.tol?.heat || '—')} • برد: ${esc(p.tol?.cold || '—')} • ملوحة: ${esc(p.tol?.salt || '—')}</p></div>
+    <div class="card"><h3>💧 السقي</h3><p><b>الطريقة:</b> ${esc(METHODS[p.w.m] || p.w.m)}</p>
+      ${LEAVES[p.w.leaves] ? `<p><b>${esc(LEAVES[p.w.leaves].t)}:</b> ${esc(LEAVES[p.w.leaves].d)}</p>` : ''}
+      <dl class="kv">${['S', 'M', 'W'].map((s) => { const v = p.w[s]; return `<dt>${SEASON_NAMES[s]}</dt><dd>${!v ? 'خارج الموسم' : p.w.unit === 'pot' ? `فحص كل ${v[0]} يوم، واسقِ حتى يخرج الماء من الأسفل` : `كل ${v[0]} يوم — ${v[1]} ${p.w.unit === 'Lm2' ? 'لتر/م²' : 'لتر للنبتة'}`} <span class="muted">(${ex[p.w.slot?.[s]] || 'الصبح'})</span></dd>`; }).join('')}</dl>
+      ${p.w.est ? `<p class="muted">بعد الزراعة: كل ${p.w.est.every} يوم لمدة ${p.w.est.days} يوم.</p>` : ''}
+      <p><b>متى يحتاج سقي؟</b> ${esc(p.w.test)}</p>${p.w.warn ? `<div class="note">⚠️ ${esc(p.w.warn)}</div>` : ''}</div>
+    ${p.feed?.length ? `<div class="card"><h3>🧪 التسميد</h3>${p.feed.map((f) => `<p><span class="pill feed">${esc(f.n)}</span><br>${esc(f.how)}<br><span class="muted">${f.mo.map((m) => MONTHS[m]).join('، ')}</span></p>`).join('')}</div>` : ''}
+    ${p.care || p.problems ? `<div class="card"><h3>✂️ العناية</h3><p>${esc(p.care)}</p>${p.problems ? `<p>${esc(p.problems)}</p>` : ''}</div>` : ''}
+    <button class="btn" id="addit" style="width:100%;margin-bottom:20px">➕ أضفه لحديقتي</button>`;
+  document.getElementById('addit').onclick = () => PLANT_BY_ID[p.id] && !p.ai ? openPlantForm({ speciesId: p.id, photos }) : openPlantForm({ profile: p, photos });
+}
+
+// ─────────────── فحص الصحة ───────────────
+function openCheckup(id) { const view = { form: true, busy: false, render: () => renderCheckup(view, id) }; push(view); }
+function renderCheckup(view, id) {
+  const pl = S.plants.find((p) => p.id === id); const p = profileOf(pl);
+  setHead('📷 فحص صحة', plantLabel(pl));
+  const photos = [];
+  $app.innerHTML = `<div class="card"><p>صوّر <b>${esc(plantLabel(pl))}</b>: صورة للنبتة كاملة، وصورة قريبة لأي ورقة فيها تغير (اصفرار، بقع، حروق، حشرات)، وإذا ممكن صورة للتربة.</p>
+    <div class="row"><label class="btn sec" style="text-align:center;margin:0">📸 الكاميرا<input id="cam" type="file" accept="image/*" capture="environment" class="hidden"></label>
+    <label class="btn sec" style="text-align:center;margin:0">🖼 المعرض<input id="gal" type="file" accept="image/*" multiple class="hidden"></label></div>
+    <div class="photos" id="prev"></div>
+    ${S.settings.geminiKey ? `<button class="btn" id="go" style="width:100%;margin-top:10px;background:var(--check)" disabled>🩺 افحص</button>` : `<div class="note">بدون مفتاح Gemini ما يقدر يحلل الصور — تقدر تسجل الفحص يدوياً.</div>`}
+    <label>ملاحظاتك (اختياري)</label><textarea id="nt" placeholder="مثلاً: لاحظت اصفرار بالأوراق السفلى"></textarea>
+    <button class="btn ghost" id="manual" style="width:100%;margin-top:8px">✓ سجّل الفحص بدون تحليل</button><div id="out"></div></div>`;
+  const add = async (files) => { for (const f of [...files].slice(0, 4 - photos.length)) photos.push(await shrinkImage(f, 1280, 0.85)); document.getElementById('prev').innerHTML = photos.map((x) => `<img src="${x.dataUrl}">`).join(''); const g = document.getElementById('go'); if (g) g.disabled = !photos.length; };
+  document.getElementById('cam').onchange = (e) => add(e.target.files);
+  document.getElementById('gal').onchange = (e) => add(e.target.files);
+  const save = async (r) => {
+    const small = photos[0] ? (await shrinkImage(photos[0].blob, 500, 0.7)).dataUrl : null;
+    await addDoc(uc('checkups'), { plantId: id, date: todayStr(), status: r?.status || 'healthy', score: r?.score ?? null, summary: r?.summary || '', findings: r?.findings || [], causes: r?.causes || [], actions: r?.actions || [], notes: document.getElementById('nt').value.trim(), photo: small, at: serverTimestamp() });
+    await updateDoc(ud('plants', id), { lastCheckup: todayStr(), ...(small && !pl.thumb ? { thumb: (await shrinkImage(photos[0].blob, 160, 0.7)).dataUrl } : {}) });
+  };
+  document.getElementById('manual').onclick = async () => { await save(null); toast('تم تسجيل الفحص'); back(); };
+  const g = document.getElementById('go');
+  if (g) g.onclick = async () => {
+    const out = document.getElementById('out'); view.busy = true; g.disabled = true;
+    out.innerHTML = loading('المهندس الزراعي يفحص النبات...');
+    try {
+      const logs = await getDocs(query(uc('logs'), where('plantId', '==', id))).catch(() => null);
+      const recent = logs ? logs.docs.map((d) => d).sort((a, b) => (b.data().date || '').localeCompare(a.data().date || '')).slice(0, 8).map((d) => { const l = d.data(); return `${l.type} ${l.date}${l.liters ? ' ' + l.liters + 'L' : ''}`; }).join('، ') : '';
+      const plan = waterPlan(pl, todayStr(), S.settings);
+      const r = await aiHealth({ key: S.settings.geminiKey, model: S.settings.model, images: photos, plant: pl, profile: p, recent: `${recent}. الجدول الحالي: كل ${plan?.every} يوم ${plan?.amountText || ''}. ملاحظة المستخدم: ${document.getElementById('nt').value}` });
+      await save(r);
+      const st = { healthy: '🟢 سليم', warning: '🟡 يحتاج انتباه', sick: '🔴 مريض' }[r.status] || r.status;
+      const ov = r.suggest_override || {};
+      out.innerHTML = `<div class="card" style="margin-top:12px"><h3>${st}${r.score != null ? ` — ${esc(r.score)}/100` : ''}</h3><p>${esc(r.summary)}</p>
+        ${r.findings?.length ? `<b>الملاحظات:</b><ul class="clean">${r.findings.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+        ${r.causes?.length ? `<b>الأسباب المرجحة:</b><ul class="clean">${r.causes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+        ${r.actions?.length ? `<b>المطلوب:</b><ul class="clean">${r.actions.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+        ${r.watering_change ? `<div class="note blue">💧 ${esc(r.watering_change)}</div>` : ''}
+        ${ov.every || ov.amount ? `<button class="btn sec" id="apov" style="width:100%;margin-top:8px">طبّق التعديل المقترح على الجدول (${ov.every ? 'كل ' + ov.every + ' يوم' : ''} ${ov.amount ? ov.amount + ' لتر' : ''})</button>` : ''}
+        <button class="btn" id="done" style="width:100%;margin-top:8px">تم</button></div>`;
+      const ap = document.getElementById('apov'); if (ap) ap.onclick = async () => { await updateDoc(ud('plants', id), { override: { every: ov.every || pl.override?.every || null, amount: ov.amount || pl.override?.amount || null } }); toast('تم تعديل الجدول'); ap.remove(); };
+      if (r.recheck_days) await updateDoc(ud('plants', id), { checkEvery: Math.min(60, Math.max(3, Number(r.recheck_days))) });
+      document.getElementById('done').onclick = () => back();
+    } catch (e) { out.innerHTML = `<div class="note red">${esc(e.message)}</div>`; g.disabled = false; }
+    finally { view.busy = false; }
+  };
+}
+
+// ─────────────── الإعدادات ───────────────
+function renderSettings() {
+  setHead('⚙️ الإعدادات', S.user.email);
+  const s = S.settings;
+  $app.innerHTML = `
+  <div class="card"><h3>🔔 الإشعارات</h3><p class="muted" id="pstat">الحالة: ${('Notification' in window) ? ({ granted: 'مفعلة ✓', denied: 'مرفوضة — فعّلها من إعدادات المتصفح للموقع', default: 'غير مفعلة' })[Notification.permission] : 'غير مدعومة بهذا المتصفح'}</p>
+    <p class="muted">تجيك إشعارات: 5:30 الصبح (مهام اليوم) و 5:30 العصر (اللي ما خلصته).</p>
+    <div class="row"><button class="btn water" id="pon">تفعيل على هذا الجهاز</button><button class="btn ghost small" id="ptest">تجربة</button></div></div>
+  <div class="card"><h3>🚿 صبيب الصوندة</h3><p class="muted">حتى أحولك اللترات إلى دقائق: املأ سطل معروف الحجم بالصوندة على نفس الفتحة اللي تسقي بيها، واحسب الثواني.</p>
+    <div class="row"><div><label>حجم السطل (لتر)</label><input id="bk" type="number" inputmode="decimal" value="10"></div><div><label>الثواني</label><input id="sec" type="number" inputmode="decimal" placeholder="مثلاً 45"></div></div>
+    <p>الصبيب الحالي: <b id="flow">${s.flowLpm ? s.flowLpm + ' لتر/دقيقة' : 'غير محسوب'}</b></p><button class="btn sec" id="calc" style="width:100%">احسب واحفظ</button></div>
+  <div class="card"><h3>🔑 مفاتيح التعرف والذكاء الاصطناعي (مجانية)</h3>
+    <label>مفتاح PlantNet</label><input id="pk" dir="ltr" value="${esc(s.plantnetKey || '')}" placeholder="من my.plantnet.org">
+    <label>مفتاح Gemini</label><input id="gk" dir="ltr" value="${esc(s.geminiKey || '')}" placeholder="من aistudio.google.com">
+    <label>نموذج Gemini</label><input id="gm" dir="ltr" value="${esc(s.model || DEFAULT_MODEL)}">
+    <p class="muted">إذا Google غيّرت أسماء النماذج المجانية، غيّر الاسم هنا (مثلاً gemini-3.1-flash-lite).</p>
+    <button class="btn" id="savek" style="width:100%">حفظ المفاتيح</button></div>
+  <div class="card"><h3>📍 أماكن الحديقة</h3><div id="zl">${(s.zones || []).map((z, i) => `<div class="row" style="margin-bottom:6px"><span>${esc(z)}</span><button class="btn ghost small" style="flex:0" data-zd="${i}">✕</button></div>`).join('') || '<span class="muted">لا يوجد</span>'}</div>
+    <div class="row" style="margin-top:8px"><input id="zn" placeholder="مكان جديد"><button class="btn sec small" style="flex:0" id="za">إضافة</button></div></div>
+  <div class="card"><h3>💾 نسخة احتياطية</h3><button class="btn sec" id="exp" style="width:100%">تنزيل نسخة (JSON)</button></div>
+  <div class="card"><h3>🔧 ربط Firebase</h3><p class="muted">المشروع: ${esc(CFG.firebase?.projectId || '')}</p><button class="btn ghost" id="resetcfg" style="width:100%">إعادة إعداد الربط</button></div>
+  <button class="btn ghost" id="out" style="width:100%;margin-bottom:20px">تسجيل خروج</button>`;
+  const set = (d) => setDoc(ud('meta', 'settings'), d, { merge: true });
+  document.getElementById('pon').onclick = enablePush;
+  document.getElementById('ptest').onclick = testNotif;
+  document.getElementById('calc').onclick = () => { const l = +document.getElementById('bk').value; const sec = +document.getElementById('sec').value; if (!l || !sec) return toast('اكتب الحجم والثواني'); const f = Math.round((l / (sec / 60)) * 10) / 10; set({ flowLpm: f }).then(() => toast(`الصبيب: ${f} لتر/دقيقة`)); };
+  document.getElementById('savek').onclick = () => set({ plantnetKey: document.getElementById('pk').value.trim(), geminiKey: document.getElementById('gk').value.trim(), model: document.getElementById('gm').value.trim() || DEFAULT_MODEL }).then(() => toast('تم الحفظ'));
+  document.getElementById('za').onclick = () => { const z = document.getElementById('zn').value.trim(); if (z) set({ zones: [...(s.zones || []), z] }); };
+  $app.querySelectorAll('[data-zd]').forEach((b) => b.onclick = () => set({ zones: (s.zones || []).filter((_, i) => i !== +b.dataset.zd) }));
+  document.getElementById('exp').onclick = () => {
+    const data = { exportedAt: new Date().toISOString(), plants: S.plants.map(({ thumb, ...p }) => p), settings: { ...S.settings, geminiKey: undefined, plantnetKey: undefined } };
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' })); a.download = `حديقتي-${todayStr()}.json`; a.click();
+  };
+  document.getElementById('out').onclick = () => signOut(auth);
+  document.getElementById('resetcfg').onclick = () => { if (confirm('إعادة إدخال بيانات Firebase؟')) { localStorage.removeItem('garden_cfg'); location.reload(); } };
+}
+
+// ─────────────── الإشعارات (FCM) ───────────────
+let swReg = null;
+async function getSW() { if (swReg) return swReg; swReg = await navigator.serviceWorker.register('firebase-messaging-sw.js?c=' + encodeURIComponent(btoa(JSON.stringify(CFG.firebase)))); await navigator.serviceWorker.ready; return swReg; }
+async function enablePush() {
+  try {
+    if (!(await isSupported())) return toast('هذا المتصفح لا يدعم الإشعارات — استعمل Chrome على أندرويد');
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return toast('لازم تسمح بالإشعارات');
+    const reg = await getSW();
+    const token = await getToken(getMessaging(app), { vapidKey: CFG.vapidKey, serviceWorkerRegistration: reg });
+    if (!token) throw new Error('ما وصل رمز الجهاز');
+    await setDoc(ud('devices', token.slice(-40).replace(/[^A-Za-z0-9_-]/g, '_')), { token, ua: navigator.userAgent.slice(0, 120), at: serverTimestamp() });
+    await setDoc(ud('meta', 'settings'), { pushDismissed: true }, { merge: true });
+    toast('🔔 تم تفعيل الإشعارات على هذا الجهاز');
+    rerender(true);
+  } catch (e) { toast('خطأ بالإشعارات: ' + e.message, 5000); }
+}
+async function testNotif() {
+  if (Notification.permission !== 'granted') return enablePush();
+  const reg = await getSW();
+  const t = tasksFor(S.plants, todayStr(), S.settings).filter((x) => x.type === 'water');
+  reg.showNotification('🌿 تجربة إشعار', { body: t.length ? `عندك ${t.length} سقي اليوم` : 'الإشعارات شغالة ✓', icon: 'icon-192.png', dir: 'rtl', lang: 'ar' });
+}
+async function setupForegroundMessages() {
+  try {
+    if (!(await isSupported()) || Notification.permission !== 'granted') return;
+    onMessage(getMessaging(app), async (m) => {
+      const n = m.notification || {}; const reg = await getSW();
+      reg.showNotification(n.title || 'حديقتي', { body: n.body, icon: 'icon-192.png', dir: 'rtl', tag: m.data?.tag });
+    });
+  } catch { /* تجاهل */ }
+}
+if ('serviceWorker' in navigator && CFG.firebase) getSW().catch(() => {});
+
+
+// ─────────────── الذكاء الاصطناعي ───────────────
+// التعرف على النبات وفحص الصحة: PlantNet (مجاني) + Gemini (مفتاح مجاني من Google AI Studio)
+
+const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
+
+// تصغير الصورة وضغطها (JPEG) — يرجع {blob, dataUrl, b64}
+async function shrinkImage(file, maxSide = 1024, quality = 0.8) {
+  const bmp = await createImageBitmap(file).catch(async () => {
+    const img = new Image(); img.src = URL.createObjectURL(file); await img.decode(); return img;
+  });
+  const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const dataUrl = c.toDataURL('image/jpeg', quality);
+  const blob = await (await fetch(dataUrl)).blob();
+  return { blob, dataUrl, b64: dataUrl.split(',')[1] };
+}
+
+// ─── PlantNet ───
+async function plantnetIdentify(images, apiKey) {
+  const fd = new FormData();
+  images.forEach((im, i) => { fd.append('images', im.blob, `p${i}.jpg`); fd.append('organs', 'auto'); });
+  const url = `https://my-api.plantnet.org/v2/identify/all?api-key=${encodeURIComponent(apiKey)}&lang=en&nb-results=5&include-related-images=false`;
+  const r = await fetch(url, { method: 'POST', body: fd });
+  if (r.status === 404) return []; // لم يتعرف على نوع
+  if (!r.ok) throw new Error(`PlantNet: ${r.status} ${(await r.text()).slice(0, 160)}`);
+  const j = await r.json();
+  return (j.results || []).map((x) => ({
+    score: Math.round((x.score || 0) * 100),
+    sci: x.species?.scientificNameWithoutAuthor || '',
+    common: (x.species?.commonNames || []).slice(0, 3).join('، '),
+    family: x.species?.family?.scientificNameWithoutAuthor || '',
+    match: matchScientific(x.species?.scientificNameWithoutAuthor || ''),
+  }));
+}
+
+// ─── Gemini ───
+async function gemini({ key, model, prompt, images = [] }) {
+  if (!key) throw new Error('ضع مفتاح Gemini بالإعدادات أولاً');
+  const parts = [{ text: prompt }, ...images.map((im) => ({ inline_data: { mime_type: 'image/jpeg', data: im.b64 } }))];
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model || DEFAULT_MODEL)}:generateContent?key=${encodeURIComponent(key)}`;
+  const r = await fetch(url, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { responseMimeType: 'application/json', temperature: 0.2 } }),
+  });
+  if (!r.ok) {
+    const t = await r.text();
+    if (r.status === 429) throw new Error('تجاوزت الحد المجاني لـ Gemini مؤقتاً — حاول بعد دقيقة.');
+    if (r.status === 404) throw new Error(`اسم النموذج "${model}" غير متوفر — غيّره بالإعدادات (مثلاً gemini-3.1-flash-lite أو gemini-3.5-flash).`);
+    throw new Error(`Gemini: ${r.status} ${t.slice(0, 200)}`);
+  }
+  const j = await r.json();
+  const txt = j.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') || '';
+  try { return JSON.parse(txt.replace(/^```json|```$/g, '').trim()); } catch { throw new Error('رد Gemini غير مفهوم، أعد المحاولة.'); }
+}
+
+const CONTEXT = `السياق الثابت: حديقة منزلية في مدينة النجف، العراق. المناخ صحراوي حار جاف: الصيف (مايس–أيلول) 45-50°م ورطوبة قليلة جداً، الشتاء (كانون الأول–شباط) بارد ليلاً 2-8°م مع صقيع خفيف أحياناً. التربة كلسية قلوية (pH ~8) وماء الإسالة مالح نسبياً. السقي يدوي بالصوندة (خرطوم) أو مرشة للأصص، لا يوجد تنقيط. الأسمدة المتوفرة بالعراق: سماد حيواني متخمر، NPK 20-20-20، سماد عالي البوتاسيوم 10-10-40، يوريا 46%، حديد مخلبي EDDHA، سماد سائل للنباتات الداخلية.`;
+
+const PROFILE_SCHEMA = `أعد JSON فقط بهذا الشكل بالضبط:
+{
+ "identified": {"ar": "الاسم الشائع بالعراق", "sci": "الاسم العلمي", "confidence": 0-100, "reason": "سطر واحد: ما الذي ميّزته بالصورة"},
+ "alternatives": [{"ar":"", "sci":"", "confidence":0-100}],
+ "profile": {
+  "ar": "", "alt": ["أسماء أخرى محلية"], "sci": "",
+  "cat": أحد (${Object.keys(CATS).join('|')}),
+  "env": "out" أو "in" أو "both",
+  "light": أحد (${Object.keys(LIGHT).join('|')}),
+  "place": "أين يُزرع بالدار تحديداً (جهة الشمس، المسافة عن الجدران، الحماية)",
+  "soil": "",
+  "w": {
+   "m": أحد (${Object.keys(METHODS).join('|')}) — طريقة السقي,
+   "leaves": أحد (${Object.keys(LEAVES).join('|')}) — هل تُبلّ الأوراق,
+   "unit": "L" (لتر للنبتة) أو "Lm2" (للمسطحات) أو "pot" (للنباتات الداخلية بالأصص),
+   "S": [كل_كم_يوم, لترات] للصيف أو null إذا لا يعيش, "M": [..] للربيع والخريف, "W": [..] للشتاء — (للـ pot ضع [كل_كم_يوم] فقط),
+   "mature": [مضاعف_الفترة, مضاعف_الكمية] للأشجار فقط وإلا null,
+   "est": {"days": أيام فترة التثبيت بعد الزراعة, "every": كل كم يوم خلالها, "amount": لترات},
+   "slot": {"S": "early|morning|midmorning", "M": "...", "W": "..."},
+   "test": "كيف أعرف أنه يحتاج سقي (فحص التربة)",
+   "warn": "أهم تحذيرات السقي"
+  },
+  "feed": [{"n": "اسم السماد", "f": "وظيفته (اكتب عضوي إذا كان عضوياً)", "mo": [أشهر 1-12], "d": كل_كم_يوم, "how": "الكمية بالغرام والطريقة"}],
+  "tol": {"heat": "", "cold": "", "salt": ""},
+  "care": "تقليم وعناية أخرى", "problems": "الآفات والأمراض الشائعة بالعراق وعلاجها",
+  "check": كل_كم_يوم_فحص_بالصور
+ }
+}
+كن دقيقاً ومحافظاً بالكميات: الكميات للنبتة الفتية المزروعة حديثاً بالأرض (أو للأصيص). إذا لم تكن متأكداً من النوع اخفض confidence واذكر البدائل. اكتب بالعربية الواضحة.`;
+
+async function aiProfile({ key, model, images, hint }) {
+  const prompt = `${CONTEXT}
+أنت مهندس زراعي خبير بنباتات المشاتل العراقية. تعرّف على النبات في الصور${hint ? ` (نتيجة أولية من تطبيق تعرّف: ${hint})` : ''} وأنشئ ملف رعاية دقيق مضبوط على مناخ النجف والسقي بالصوندة.
+${PROFILE_SCHEMA}`;
+  const out = await gemini({ key, model, prompt, images });
+  return sanitizeProfile(out);
+}
+
+async function aiProfileByName({ key, model, name }) {
+  const prompt = `${CONTEXT}
+أنت مهندس زراعي خبير بنباتات المشاتل العراقية. أنشئ ملف رعاية دقيق للنبات: "${name}" مضبوط على مناخ النجف والسقي بالصوندة. ضع confidence حسب تأكدك من هوية النبات من الاسم.
+${PROFILE_SCHEMA}`;
+  return sanitizeProfile(await gemini({ key, model, prompt }));
+}
+
+function clampPair(v, unit) {
+  if (v == null) return null;
+  if (!Array.isArray(v)) return null;
+  const every = Math.min(60, Math.max(1, Number(v[0]) || 7));
+  if (unit === 'pot') return [every];
+  const amt = Math.min(500, Math.max(0.1, Number(v[1]) || 1));
+  return [every, amt];
+}
+
+function sanitizeProfile(out) {
+  const p = out.profile || {};
+  const w = p.w || {};
+  const unit = ['L', 'Lm2', 'pot'].includes(w.unit) ? w.unit : 'L';
+  const prof = {
+    id: 'ai_' + (p.sci || out.identified?.sci || 'plant').toLowerCase().replace(/[^a-z]+/g, '_').slice(0, 40),
+    ai: true,
+    ar: p.ar || out.identified?.ar || 'نبات', alt: Array.isArray(p.alt) ? p.alt.slice(0, 6) : [],
+    sci: p.sci || out.identified?.sci || '', cat: CATS[p.cat] ? p.cat : 'shrub',
+    env: ['out', 'in', 'both'].includes(p.env) ? p.env : 'out', light: LIGHT[p.light] ? p.light : 'partial',
+    place: p.place || '', soil: p.soil || '',
+    w: {
+      m: METHODS[w.m] ? w.m : (unit === 'pot' ? 'can' : 'base'), leaves: LEAVES[w.leaves] ? w.leaves : 'never', unit,
+      S: clampPair(w.S, unit), M: clampPair(w.M, unit), W: clampPair(w.W, unit),
+      mature: Array.isArray(w.mature) ? [Math.min(3, Math.max(1, +w.mature[0] || 1)), Math.min(4, Math.max(1, +w.mature[1] || 1))] : null,
+      est: w.est && unit !== 'pot' ? { days: Math.min(60, +w.est.days || 21), every: Math.min(7, Math.max(1, +w.est.every || 2)), amount: Math.min(100, Math.max(0.2, +w.est.amount || 1)) } : null,
+      slot: w.slot || { S: 'early', M: 'morning', W: 'midmorning' }, test: w.test || '', warn: w.warn || '',
+    },
+    feed: Array.isArray(p.feed) ? p.feed.slice(0, 5).map((f) => ({ n: f.n || 'سماد', f: f.f || '', mo: (f.mo || []).map(Number).filter((m) => m >= 1 && m <= 12), d: Math.max(7, +f.d || 30), how: f.how || '' })) : [],
+    tol: p.tol || {}, care: p.care || '', problems: p.problems || '', check: Math.min(60, Math.max(7, +p.check || 21)),
+  };
+  if (!prof.w.S && !prof.w.M && !prof.w.W) prof.w.M = unit === 'pot' ? [7] : [4, 5];
+  return { identified: out.identified || {}, alternatives: out.alternatives || [], profile: prof };
+}
+
+// فحص صحة النبات من الصور
+async function aiHealth({ key, model, images, plant, profile, recent }) {
+  const prompt = `${CONTEXT}
+أنت مهندس زراعي تفحص صحة نبات من صور التقطها صاحبه اليوم.
+النبات: ${profile.ar} (${profile.sci}). المكان: ${plant.zone || 'غير محدد'} — ${plant.potted ? 'بأصيص' : 'بالأرض'}${plant.indoor ? '، داخل البيت' : ''}. تاريخ الزراعة: ${plant.plantedDate || 'غير معروف'}.
+آخر السجلات: ${recent || 'لا يوجد'}.
+افحص الصور بدقة (لون الأوراق، الاصفرار، الحروق، البقع، الذبول، الحشرات، حالة التربة إن ظهرت) وأعد JSON فقط:
+{"status": "healthy|warning|sick", "score": 0-100, "summary": "جملتان", "findings": ["ملاحظة محددة من الصورة"], "causes": ["السبب المرجح"], "actions": ["إجراء عملي محدد بالكمية والتوقيت"], "watering_change": "هل يحتاج تعديل السقي؟ نعم/لا ولماذا", "suggest_override": {"every": رقم_أو_null, "amount": رقم_أو_null}, "recheck_days": رقم}
+إذا الصورة غير واضحة للحكم قل ذلك بالـ summary واطلب صورة محددة (قريبة للورقة، أو للتربة، أو للنبتة كاملة).`;
+  return gemini({ key, model, prompt, images });
+}
+
+</script>
+</body>
+</html>
